@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Montaña Dept — Agencia creativa</title>
 <meta name="description" content="Montaña Dept es una agencia creativa de Santiago. Hacemos branding, redes sociales, publicidad y audiovisual.">
-<meta name="theme-color" content="#f3f3f1">
+<meta name="theme-color" content="#0d0d0d">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Montaña Dept">
 <meta property="og:locale" content="es_CL">
@@ -18,133 +18,33 @@
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600&amp;family=Inter:wght@400;500&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&amp;family=Inter:wght@400;500&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap">
 <link rel="stylesheet" href="assets/css/styles.css">
 </head>
-<body>
+<body class="is-home-dark">
 <a class="skip-link" href="#main">Saltar al contenido</a>
-<header class="site-header">
-  <div class="grid header-in">
-    <a class="brand" href="index.html"><img src="assets/logos/logo-horizontal-negro.svg" alt="Montaña Dept" width="113" height="22"></a>
-    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu"><span class="menu-btn-label">Menú</span></button>
-    <nav id="menu" class="nav" aria-label="Principal">
-      <ul class="nav-list">
-        <li><a href="index.html" aria-current="page">Inicio</a></li>
-        <li><a href="proyectos.html">Proyectos</a></li>
-        <li><a href="servicios.html">Servicios</a></li>
-        <li><a href="nosotros.html">Nosotros</a></li>
-        <li class="nav-only-mobile"><a href="contacto.html">Contacto</a></li>
+<div class="hm grain">
+  <header class="hm-bar">
+    <a class="hm-brand" href="index.html"><img src="assets/logos/isotipo-blanco.svg" alt="" width="52" height="20"><span>Montaña Dept<span class="sr-only">, inicio</span></span></a>
+    <p class="hm-clock" aria-hidden="true">[ <span id="reloj">SCL --:--</span> ]</p>
+  </header>
+  <main id="main" class="hm-main">
+    <nav aria-label="Principal">
+      <ul class="hm-list">
+        <li class="hm-item"><a href="proyectos.html" data-tape="[ VER PROYECTOS ]"><span class="hm-t">Proyectos</span></a></li>
+        <li class="hm-item"><a href="servicios.html" data-tape="[ VER SERVICIOS ]"><span class="hm-t">Servicios</span></a></li>
+        <li class="hm-item"><a href="nosotros.html" data-tape="[ VER NOSOTROS ]"><span class="hm-t">Nosotros</span></a></li>
+        <li class="hm-item"><a href="contacto.html" data-tape="[ VER CONTACTO ]"><span class="hm-t">Contacto</span></a></li>
+        <li class="hm-item"><a href="https://www.instagram.com/mntn_dept/" target="_blank" rel="noopener noreferrer" data-tape="[ VER INSTAGRAM ]"><span class="hm-t">Redes sociales</span><span class="sr-only"> (Instagram, se abre en una pestaña nueva)</span></a></li>
       </ul>
-      <a class="header-cta" href="contacto.html"><span aria-hidden="true">→</span> Empecemos un proyecto</a>
     </nav>
-  </div>
-</header>
-<main id="main">
-<div class="grid meta-strip mono" aria-label="Datos de la agencia">
-  <span class="ms-a">33°27′S 70°40′W</span>
-  <span class="ms-b">Santiago, Chile</span>
-  <span class="ms-c">Agencia creativa</span>
-  <span class="ms-d">Est. 2026</span>
-  <span class="ms-e" id="reloj" aria-hidden="true">SCL --:--</span>
+  </main>
+  <footer class="hm-foot">
+    <p class="hm-foot-l">© 2026</p>
+    <p class="hm-links"><a href="https://www.instagram.com/mntn_dept/" target="_blank" rel="noopener noreferrer">Instagram <span aria-hidden="true">↗</span><span class="sr-only">(se abre en una pestaña nueva)</span></a><a href="mailto:contacto@montanadept.com">contacto@montanadept.com <span aria-hidden="true">↗</span></a></p>
+    <p class="hm-foot-r">Santiago, CL</p>
+  </footer>
 </div>
-
-<section class="grid hero" data-rv>
-  <h1 class="display hero-title">Hacemos que tu marca se note.</h1>
-  <p class="hero-lead">Branding, redes sociales, publicidad y audiovisual. Ideas simples, bien hechas y con carácter.</p>
-  <p class="mono hero-scroll"><span aria-hidden="true">↓</span> Scroll</p>
-</section>
-
-<section class="camp" aria-labelledby="t-mapa" data-rv>
-  <div class="grid camp-head">
-    <h2 class="camp-title" id="t-mapa">Lo que hacemos</h2>
-    <p class="mono camp-sub">[ Mapa de servicios ]</p>
-  </div>
-  <div class="grid camp-corners mono" aria-hidden="true"><span>33°27′S 70°40′W</span><span>Escala 1:1 / Alt. 4</span></div>
-  <div class="camp-map">
-    <ul class="camp-labels">
-      <li class="camp-label camp-label--1"><a href="servicios.html"><span class="mono">Base / Branding [ 01 ]</span><span class="camp-desc">Identidad visual, logo y manual de marca.</span></a></li>
-      <li class="camp-label camp-label--2"><a href="servicios.html"><span class="mono">Campo 1 / Redes sociales [ 02 ]</span><span class="camp-desc">Estrategia, contenido y diseño de piezas.</span></a></li>
-      <li class="camp-label camp-label--3"><a href="servicios.html"><span class="mono">Campo 2 / Publicidad [ 03 ]</span><span class="camp-desc">Campañas con una idea clara detrás.</span></a></li>
-      <li class="camp-label camp-label--4"><a href="servicios.html"><span class="mono">Cumbre / Audiovisual [ 04 ]</span><span class="camp-desc">Foto y video que cuentan lo que haces.</span></a></li>
-    </ul>
-    <svg class="camp-svg" viewBox="0 0 1000 380" preserveAspectRatio="none" role="img" aria-label="Perfil de montaña con cuatro campamentos: base, campo 1, campo 2 y cumbre, que representan branding, redes sociales, publicidad y audiovisual.">
-      <path class="camp-bg" d="M0 372 L90 330 L170 345 L260 300 L360 318 L450 262 L540 285 L640 215 L740 240 L840 150 L920 190 L1000 170" fill="none" stroke="#d4d4cf" stroke-width="1" vector-effect="non-scaling-stroke"/>
-      <path class="camp-bg" d="M0 378 L120 360 L230 372 L330 350 L470 368 L600 335 L760 360 L880 330 L1000 352" fill="none" stroke="#d4d4cf" stroke-width="1" vector-effect="non-scaling-stroke"/>
-      <g class="camp-guides" stroke="#111111" stroke-width="1" vector-effect="non-scaling-stroke">
-        <line x1="60" y1="0" x2="60" y2="280" vector-effect="non-scaling-stroke"/>
-        <line x1="280" y1="0" x2="280" y2="252" vector-effect="non-scaling-stroke"/>
-        <line x1="550" y1="0" x2="550" y2="182" vector-effect="non-scaling-stroke"/>
-        <line x1="800" y1="0" x2="800" y2="74" vector-effect="non-scaling-stroke"/>
-      </g>
-      <path class="camp-ridge" d="M0 300 L60 280 L140 292 L200 262 L280 252 L350 268 L430 222 L490 205 L550 182 L620 200 L690 150 L750 100 L800 74 L850 110 L910 92 L960 128 L1000 118" fill="none" stroke="#111111" stroke-width="1.5" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>
-    </svg>
-    <span class="camp-mark camp-mark--1" aria-hidden="true"></span>
-    <span class="camp-mark camp-mark--2" aria-hidden="true"></span>
-    <span class="camp-mark camp-mark--3" aria-hidden="true"></span>
-    <span class="camp-mark camp-mark--4" aria-hidden="true"></span>
-  </div>
-  <ol class="grid camp-list mono">
-    <li><span>[ 01 ] Base / Branding</span><span class="camp-desc">Identidad visual, logo y manual de marca.</span></li>
-    <li><span>[ 02 ] Campo 1 / Redes sociales</span><span class="camp-desc">Estrategia, contenido y diseño de piezas.</span></li>
-    <li><span>[ 03 ] Campo 2 / Publicidad</span><span class="camp-desc">Campañas con una idea clara detrás.</span></li>
-    <li><span>[ 04 ] Cumbre / Audiovisual</span><span class="camp-desc">Foto y video que cuentan lo que haces.</span></li>
-  </ol>
-</section>
-
-<section class="proj-sec" aria-labelledby="t-proyectos" data-rv>
-  <div class="grid page-head page-head--sec">
-    <p class="mono page-label">[ Trabajo ]</p>
-    <div class="ghost" aria-hidden="true" data-count>03</div>
-    <h2 class="display page-title" id="t-proyectos">Proyectos</h2>
-  </div>
-  <div class="grid idx-head mono" aria-hidden="true"><span class="c-num">Nº</span><span class="c-name">Proyecto</span><span class="c-rubro">Rubro</span><span class="c-cats">Categorías</span><span class="c-year">Año</span><span class="c-arrow"></span></div>
-  <ul class="index" data-proyectos-index="destacados"></ul>
-  <noscript><p class="grid mono">Activa JavaScript para ver los proyectos.</p></noscript>
-  <p class="grid idx-more"><a class="link-under" href="proyectos.html">Ver todos los proyectos <span aria-hidden="true">→</span></a></p>
-</section>
-
-<section class="sign grain" aria-label="Firma">
-  <div class="sign-in mono">
-    <p class="sign-top">Pensado, diseñado y hecho por</p>
-    <p class="sign-pill"><img class="sign-iso" src="assets/logos/isotipo-blanco.svg" alt="" width="62" height="24"><span>Montaña ⁄ Dept</span><img class="sign-iso sign-iso--sm" src="assets/logos/isotipo-blanco.svg" alt="" width="28" height="11"></p>
-    <p class="sign-from">Desde Santiago ✦ Para el mundo</p>
-    <p><a class="sign-btn" href="contacto.html">Conversemos <span aria-hidden="true">→</span></a></p>
-    <p class="sign-url">montanadept.com</p>
-    <p class="sign-copy">© 2026</p>
-  </div>
-</section>
-</main>
-<footer class="site-footer grain">
-  <div class="grid footer-in">
-    <a class="footer-brand" href="index.html"><img src="assets/logos/logo-vertical-blanco.svg" alt="Montaña Dept" width="96" height="77"></a>
-    <nav class="fcol fcol-nav" aria-label="Pie de página">
-      <h2 class="mono">[ Navegación ]</h2>
-      <ul>
-        <li><a href="index.html">Inicio</a></li>
-        <li><a href="proyectos.html">Proyectos</a></li>
-        <li><a href="servicios.html">Servicios</a></li>
-        <li><a href="nosotros.html">Nosotros</a></li>
-        <li><a href="contacto.html">Contacto</a></li>
-      </ul>
-    </nav>
-    <div class="fcol fcol-contact">
-      <h2 class="mono">[ Contacto ]</h2>
-      <ul>
-        <li><a href="mailto:contacto@montanadept.com">contacto@montanadept.com</a></li>
-        <li><a href="https://www.instagram.com/mntn_dept/" target="_blank" rel="noopener noreferrer">Instagram @mntn_dept</a></li>
-      </ul>
-    </div>
-    <div class="fcol fcol-geo">
-      <h2 class="mono">[ Coordenadas ]</h2>
-      <ul>
-        <li>33°27′S 70°40′W</li>
-        <li>Santiago, Chile</li>
-      </ul>
-    </div>
-  </div>
-  <div class="grid footer-bottom mono"><span>© 2026 Montaña Dept</span><span>Agencia creativa</span></div>
-</footer>
-<script src="assets/js/proyectos.js" defer></script>
 <script src="assets/js/main.js" defer></script>
 </body>
 </html>

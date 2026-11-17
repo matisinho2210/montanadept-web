@@ -26,6 +26,7 @@
 <header class="site-header">
   <div class="grid header-in">
     <a class="brand" href="index.html"><img src="assets/logos/logo-horizontal-negro.svg" alt="Montaña Dept" width="113" height="22"></a>
+    <p class="hdr-clock mono" aria-hidden="true"><span class="hdr-clock-l">Hora actual</span><span class="hdr-clock-t" id="reloj">SCL --:--</span></p>
     <button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu"><span class="menu-btn-label">Menú</span></button>
     <nav id="menu" class="nav" aria-label="Principal">
       <ul class="nav-list">
@@ -48,24 +49,43 @@
 </section>
 
 <section class="proj-list" aria-label="Lista de proyectos">
-  <div class="grid filter-bar mono">
-    <div class="filters" role="group" aria-label="Filtrar por categoría">
-      <span class="f"><button class="filter" type="button" data-filter="Todos" aria-pressed="true">Todos</button></span>
-      <span class="f"><button class="filter" type="button" data-filter="Branding" aria-pressed="false">Branding</button></span>
-      <span class="f"><button class="filter" type="button" data-filter="Redes sociales" aria-pressed="false">Redes sociales</button></span>
-      <span class="f"><button class="filter" type="button" data-filter="Publicidad" aria-pressed="false">Publicidad</button></span>
-      <span class="f"><button class="filter" type="button" data-filter="Audiovisual" aria-pressed="false">Audiovisual</button></span>
+  <div class="grid pf">
+    <div class="pf-grp pf-serv" role="group" aria-labelledby="pf-l-serv">
+      <p class="pf-label mono" id="pf-l-serv">Servicio</p>
+      <ul class="pf-list">
+        <li><button class="filter" type="button" data-filter="Todos" aria-pressed="true">Todos</button></li>
+        <li><button class="filter" type="button" data-filter="Branding" aria-pressed="false">Branding</button></li>
+        <li><button class="filter" type="button" data-filter="Redes sociales" aria-pressed="false">Redes sociales</button></li>
+        <li><button class="filter" type="button" data-filter="Publicidad" aria-pressed="false">Publicidad</button></li>
+        <li><button class="filter" type="button" data-filter="Audiovisual" aria-pressed="false">Audiovisual</button></li>
+      </ul>
     </div>
-    <div class="view-toggle" role="group" aria-label="Vista">
-      <button class="vbtn" type="button" data-view="lista" aria-pressed="true">Lista</button>
-      <span aria-hidden="true">/</span>
-      <button class="vbtn" type="button" data-view="grilla" aria-pressed="false">Grilla</button>
+    <div class="pf-grp pf-vista" role="group" aria-labelledby="pf-l-vista">
+      <p class="pf-label mono" id="pf-l-vista">Vista</p>
+      <ul class="pf-list">
+        <li><button class="vbtn" type="button" data-view="grilla" aria-pressed="false">Grilla</button></li>
+        <li><button class="vbtn" type="button" data-view="lista" aria-pressed="true">Lista</button></li>
+        <li class="pf-tira"><button class="vbtn" type="button" data-view="tira" aria-pressed="false">Tira</button></li>
+      </ul>
     </div>
-    <p class="filter-status mono" id="filtro-estado" role="status" aria-live="polite"></p>
+    <p class="pf-status mono" id="filtro-estado" role="status" aria-live="polite"></p>
   </div>
-  <div class="grid idx-head mono" aria-hidden="true" id="idx-head"><span class="c-num">Nº</span><span class="c-name">Proyecto</span><span class="c-rubro">Rubro</span><span class="c-cats">Categorías</span><span class="c-year">Año</span><span class="c-arrow"></span></div>
-  <ul class="index" data-proyectos-index="todos"></ul>
-  <ul class="grid pgrid" data-proyectos-grid="todos" hidden></ul>
+  <div class="pv pv-grilla" id="v-grilla" hidden>
+    <ul class="pgrid2" data-proyectos-grid="todos"></ul>
+  </div>
+  <div class="pv pv-lista" id="v-lista">
+    <div class="grid plist-ctl"><button class="plist-all mono" type="button" data-expand-for="plist-todos" aria-controls="plist-todos"><span class="plist-all-t">Expandir todo</span> <span aria-hidden="true" class="plist-all-i">▾</span></button></div>
+    <ul class="plist" id="plist-todos" data-plist="todos"></ul>
+  </div>
+  <div class="pv pv-tira" id="v-tira" hidden>
+    <div class="tira" role="region" aria-label="Tira de proyectos">
+      <span class="tira-c tira-c--tl mono" aria-hidden="true">(Proyectos)</span>
+      <span class="tira-c tira-c--tr mono" aria-hidden="true">33°27′S 70°40′W</span>
+      <span class="tira-c tira-c--bl mono" aria-hidden="true">Santiago, CL</span>
+      <span class="tira-c tira-c--br mono" aria-hidden="true" id="tira-count">← → Navegar</span>
+      <ul class="tira-track" id="tira-track" data-proyectos-tira="todos"></ul>
+    </div>
+  </div>
   <p class="grid empty mono" id="sin-proyectos" hidden>Todavía no tenemos proyectos en esta categoría. Pronto.</p>
   <noscript><p class="grid mono">Activa JavaScript para ver los proyectos.</p></noscript>
 </section>

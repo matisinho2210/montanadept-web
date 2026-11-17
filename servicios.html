@@ -26,6 +26,7 @@
 <header class="site-header">
   <div class="grid header-in">
     <a class="brand" href="index.html"><img src="assets/logos/logo-horizontal-negro.svg" alt="Montaña Dept" width="113" height="22"></a>
+    <p class="hdr-clock mono" aria-hidden="true"><span class="hdr-clock-l">Hora actual</span><span class="hdr-clock-t" id="reloj">SCL --:--</span></p>
     <button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu"><span class="menu-btn-label">Menú</span></button>
     <nav id="menu" class="nav" aria-label="Principal">
       <ul class="nav-list">
@@ -45,24 +46,60 @@
   <h1 class="display page-title">Lo que hacemos.</h1>
   <p class="page-lead">Cuatro áreas que se conectan entre sí. Puedes pedirnos una o armar un paquete a tu medida.</p>
 </section>
+<section class="camp" aria-labelledby="t-mapa" data-rv>
+  <div class="grid camp-head">
+    <h2 class="camp-title" id="t-mapa">Del campo base a la cumbre</h2>
+    <p class="mono camp-sub">[ Mapa de servicios ]</p>
+  </div>
+  <div class="grid camp-corners mono" aria-hidden="true"><span>33°27′S 70°40′W</span><span>Escala 1:1 / Alt. 4</span></div>
+  <div class="camp-map">
+    <ul class="camp-labels">
+      <li class="camp-label camp-label--1"><a href="#svc-branding"><span class="mono">Base / Branding [ 01 ]</span><span class="camp-desc">Identidad visual, logo y manual de marca.</span></a></li>
+      <li class="camp-label camp-label--2"><a href="#svc-redes"><span class="mono">Campo 1 / Redes sociales [ 02 ]</span><span class="camp-desc">Estrategia, contenido y diseño de piezas.</span></a></li>
+      <li class="camp-label camp-label--3"><a href="#svc-publicidad"><span class="mono">Campo 2 / Publicidad [ 03 ]</span><span class="camp-desc">Campañas con una idea clara detrás.</span></a></li>
+      <li class="camp-label camp-label--4"><a href="#svc-audiovisual"><span class="mono">Cumbre / Audiovisual [ 04 ]</span><span class="camp-desc">Foto y video que cuentan lo que haces.</span></a></li>
+    </ul>
+    <svg class="camp-svg" viewBox="0 0 1000 380" preserveAspectRatio="none" role="img" aria-label="Perfil de montaña con cuatro campamentos: base, campo 1, campo 2 y cumbre, que representan branding, redes sociales, publicidad y audiovisual.">
+      <path class="camp-bg" d="M0 372 L90 330 L170 345 L260 300 L360 318 L450 262 L540 285 L640 215 L740 240 L840 150 L920 190 L1000 170" fill="none" stroke="#d4d4cf" stroke-width="1" vector-effect="non-scaling-stroke"/>
+      <path class="camp-bg" d="M0 378 L120 360 L230 372 L330 350 L470 368 L600 335 L760 360 L880 330 L1000 352" fill="none" stroke="#d4d4cf" stroke-width="1" vector-effect="non-scaling-stroke"/>
+      <g class="camp-guides" stroke="#111111" stroke-width="1" vector-effect="non-scaling-stroke">
+        <line x1="60" y1="0" x2="60" y2="280" vector-effect="non-scaling-stroke"/>
+        <line x1="280" y1="0" x2="280" y2="252" vector-effect="non-scaling-stroke"/>
+        <line x1="550" y1="0" x2="550" y2="182" vector-effect="non-scaling-stroke"/>
+        <line x1="800" y1="0" x2="800" y2="74" vector-effect="non-scaling-stroke"/>
+      </g>
+      <path class="camp-ridge" d="M0 300 L60 280 L140 292 L200 262 L280 252 L350 268 L430 222 L490 205 L550 182 L620 200 L690 150 L750 100 L800 74 L850 110 L910 92 L960 128 L1000 118" fill="none" stroke="#111111" stroke-width="1.5" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>
+    </svg>
+    <span class="camp-mark camp-mark--1" aria-hidden="true"></span>
+    <span class="camp-mark camp-mark--2" aria-hidden="true"></span>
+    <span class="camp-mark camp-mark--3" aria-hidden="true"></span>
+    <span class="camp-mark camp-mark--4" aria-hidden="true"></span>
+  </div>
+  <ol class="grid camp-list mono">
+    <li><span>[ 01 ] Base / Branding</span><span class="camp-desc">Identidad visual, logo y manual de marca.</span></li>
+    <li><span>[ 02 ] Campo 1 / Redes sociales</span><span class="camp-desc">Estrategia, contenido y diseño de piezas.</span></li>
+    <li><span>[ 03 ] Campo 2 / Publicidad</span><span class="camp-desc">Campañas con una idea clara detrás.</span></li>
+    <li><span>[ 04 ] Cumbre / Audiovisual</span><span class="camp-desc">Foto y video que cuentan lo que haces.</span></li>
+  </ol>
+</section>
 <section class="svc" aria-label="Servicios">
   <ol class="srows">
-    <li class="grid srow" data-rv>
+    <li class="grid srow" id="svc-branding" data-rv>
       <span class="srow-num" aria-hidden="true">01</span>
       <h2 class="srow-name">Branding</h2>
       <div class="srow-body"><p>Identidad visual, logo, manual de marca y packaging.</p><ul class="mono"><li>Identidad visual</li><li>Logo</li><li>Manual de marca</li><li>Packaging</li></ul></div>
     </li>
-    <li class="grid srow" data-rv>
+    <li class="grid srow" id="svc-redes" data-rv>
       <span class="srow-num" aria-hidden="true">02</span>
       <h2 class="srow-name">Redes sociales</h2>
       <div class="srow-body"><p>Estrategia, contenido y diseño de piezas para que tu marca se vea y se escuche.</p><ul class="mono"><li>Estrategia</li><li>Contenido</li><li>Diseño de piezas</li></ul></div>
     </li>
-    <li class="grid srow" data-rv>
+    <li class="grid srow" id="svc-publicidad" data-rv>
       <span class="srow-num" aria-hidden="true">03</span>
       <h2 class="srow-name">Publicidad</h2>
       <div class="srow-body"><p>Campañas y piezas gráficas con una idea clara detrás.</p><ul class="mono"><li>Campañas</li><li>Piezas gráficas</li></ul></div>
     </li>
-    <li class="grid srow" data-rv>
+    <li class="grid srow" id="svc-audiovisual" data-rv>
       <span class="srow-num" aria-hidden="true">04</span>
       <h2 class="srow-name">Audiovisual</h2>
       <div class="srow-body"><p>Sesiones de foto y video que cuentan lo que hace tu marca.</p><ul class="mono"><li>Sesiones de foto</li><li>Sesiones de video</li></ul></div>
