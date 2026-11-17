@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Proyectos | Montaña Dept</title>
 <meta name="description" content="Proyectos de branding, redes sociales, publicidad y audiovisual de Montaña Dept, agencia creativa de Santiago.">
-<meta name="theme-color" content="#fafaf8">
+<meta name="theme-color" content="#f3f3f1">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Montaña Dept">
 <meta property="og:locale" content="es_CL">
@@ -18,76 +18,87 @@
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600&amp;family=Inter:wght@400;500&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap">
 <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 <body>
 <a class="skip-link" href="#main">Saltar al contenido</a>
 <header class="site-header">
-  <div class="wrap header-in">
-    <a class="brand" href="index.html"><img src="assets/logos/logo-horizontal-negro.svg" alt="Montaña Dept" width="133" height="26"></a>
-    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu"><span class="menu-btn-label">Menú</span><span class="menu-btn-bars" aria-hidden="true"></span></button>
+  <div class="grid header-in">
+    <a class="brand" href="index.html"><img src="assets/logos/logo-horizontal-negro.svg" alt="Montaña Dept" width="113" height="22"></a>
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu"><span class="menu-btn-label">Menú</span></button>
     <nav id="menu" class="nav" aria-label="Principal">
-      <ul>
+      <ul class="nav-list">
         <li><a href="index.html">Inicio</a></li>
         <li><a href="proyectos.html" aria-current="page">Proyectos</a></li>
+        <li><a href="servicios.html">Servicios</a></li>
+        <li><a href="nosotros.html">Nosotros</a></li>
+        <li class="nav-only-mobile"><a href="contacto.html">Contacto</a></li>
+      </ul>
+      <a class="header-cta" href="contacto.html"><span aria-hidden="true">→</span> Empecemos un proyecto</a>
+    </nav>
+  </div>
+</header>
+<main id="main">
+<section class="grid page-head" data-rv>
+  <p class="mono page-label">[ Trabajo ]</p>
+  <div class="ghost" aria-hidden="true" data-count>03</div>
+  <h1 class="display page-title">Proyectos</h1>
+  <p class="page-lead">Marcas con las que hemos trabajado. Cada una con su propia historia.</p>
+</section>
+
+<section class="proj-list" aria-label="Lista de proyectos">
+  <div class="grid filter-bar mono">
+    <div class="filters" role="group" aria-label="Filtrar por categoría">
+      <span class="f"><button class="filter" type="button" data-filter="Todos" aria-pressed="true">Todos</button></span>
+      <span class="f"><button class="filter" type="button" data-filter="Branding" aria-pressed="false">Branding</button></span>
+      <span class="f"><button class="filter" type="button" data-filter="Redes sociales" aria-pressed="false">Redes sociales</button></span>
+      <span class="f"><button class="filter" type="button" data-filter="Publicidad" aria-pressed="false">Publicidad</button></span>
+      <span class="f"><button class="filter" type="button" data-filter="Audiovisual" aria-pressed="false">Audiovisual</button></span>
+    </div>
+    <div class="view-toggle" role="group" aria-label="Vista">
+      <button class="vbtn" type="button" data-view="lista" aria-pressed="true">Lista</button>
+      <span aria-hidden="true">/</span>
+      <button class="vbtn" type="button" data-view="grilla" aria-pressed="false">Grilla</button>
+    </div>
+    <p class="filter-status mono" id="filtro-estado" role="status" aria-live="polite"></p>
+  </div>
+  <div class="grid idx-head mono" aria-hidden="true" id="idx-head"><span class="c-num">Nº</span><span class="c-name">Proyecto</span><span class="c-rubro">Rubro</span><span class="c-cats">Categorías</span><span class="c-year">Año</span><span class="c-arrow"></span></div>
+  <ul class="index" data-proyectos-index="todos"></ul>
+  <ul class="grid pgrid" data-proyectos-grid="todos" hidden></ul>
+  <p class="grid empty mono" id="sin-proyectos" hidden>Todavía no tenemos proyectos en esta categoría. Pronto.</p>
+  <noscript><p class="grid mono">Activa JavaScript para ver los proyectos.</p></noscript>
+</section>
+</main>
+<footer class="site-footer grain">
+  <div class="grid footer-in">
+    <a class="footer-brand" href="index.html"><img src="assets/logos/logo-vertical-blanco.svg" alt="Montaña Dept" width="96" height="77"></a>
+    <nav class="fcol fcol-nav" aria-label="Pie de página">
+      <h2 class="mono">[ Navegación ]</h2>
+      <ul>
+        <li><a href="index.html">Inicio</a></li>
+        <li><a href="proyectos.html">Proyectos</a></li>
         <li><a href="servicios.html">Servicios</a></li>
         <li><a href="nosotros.html">Nosotros</a></li>
         <li><a href="contacto.html">Contacto</a></li>
       </ul>
     </nav>
-  </div>
-</header>
-<main id="main">
-<section class="wrap page-head">
-  <p class="eyebrow">Trabajo</p>
-  <h1 class="display">Proyectos</h1>
-  <p class="lead">Marcas con las que hemos trabajado. Cada una con su propia historia.</p>
-</section>
-
-<section class="wrap" aria-label="Lista de proyectos">
-  <div class="filter-bar">
-    <div class="filters" role="group" aria-label="Filtrar por categoría">
-      <button class="filter" type="button" data-filter="Todos" aria-pressed="true">Todos</button>
-      <button class="filter" type="button" data-filter="Branding" aria-pressed="false">Branding</button>
-      <button class="filter" type="button" data-filter="Redes sociales" aria-pressed="false">Redes sociales</button>
-      <button class="filter" type="button" data-filter="Publicidad" aria-pressed="false">Publicidad</button>
-      <button class="filter" type="button" data-filter="Audiovisual" aria-pressed="false">Audiovisual</button>
+    <div class="fcol fcol-contact">
+      <h2 class="mono">[ Contacto ]</h2>
+      <ul>
+        <li><a href="mailto:contacto@montanadept.com">contacto@montanadept.com</a></li>
+        <li><a href="https://www.instagram.com/mntn_dept/" target="_blank" rel="noopener noreferrer">Instagram @mntn_dept</a></li>
+      </ul>
     </div>
-    <p class="filter-status" id="filtro-estado" role="status" aria-live="polite"></p>
-  </div>
-  <ul class="cards" data-proyectos-grid="todos"></ul>
-  <p class="empty" id="sin-proyectos" hidden>Todavía no tenemos proyectos en esta categoría. Pronto.</p>
-  <noscript><p class="muted">Activa JavaScript para ver los proyectos.</p></noscript>
-</section>
-<div class="section"></div>
-</main>
-<footer class="site-footer">
-  <div class="wrap">
-    <div class="footer-in">
-      <a class="footer-brand" href="index.html"><img src="assets/logos/logo-horizontal-blanco.svg" alt="Montaña Dept" width="320" height="62"></a>
-      <div class="footer-cols">
-        <nav aria-label="Pie de página">
-          <h2>Navegación</h2>
-          <ul>
-          <li><a href="index.html">Inicio</a></li>
-          <li><a href="proyectos.html">Proyectos</a></li>
-          <li><a href="servicios.html">Servicios</a></li>
-          <li><a href="nosotros.html">Nosotros</a></li>
-          <li><a href="contacto.html">Contacto</a></li>
-          </ul>
-        </nav>
-        <div>
-          <h2>Contacto</h2>
-          <ul>
-            <li><a href="https://www.instagram.com/mntn_dept/" target="_blank" rel="noopener noreferrer">Instagram @mntn_dept</a></li>
-            <li>Santiago, Chile</li>
-          </ul>
-        </div>
-      </div>
+    <div class="fcol fcol-geo">
+      <h2 class="mono">[ Coordenadas ]</h2>
+      <ul>
+        <li>33°27′S 70°40′W</li>
+        <li>Santiago, Chile</li>
+      </ul>
     </div>
-    <div class="footer-bottom"><span>© 2026 Montaña Dept</span><span>Agencia creativa</span></div>
   </div>
+  <div class="grid footer-bottom mono"><span>© 2026 Montaña Dept</span><span>Agencia creativa</span></div>
 </footer>
 <script src="assets/js/proyectos.js" defer></script>
 <script src="assets/js/main.js" defer></script>

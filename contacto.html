@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Contacto | Montaña Dept</title>
 <meta name="description" content="Escríbenos a Montaña Dept, agencia creativa de Santiago. Cuéntanos qué necesitas y lo vemos juntos.">
-<meta name="theme-color" content="#fafaf8">
+<meta name="theme-color" content="#f3f3f1">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Montaña Dept">
 <meta property="og:locale" content="es_CL">
@@ -18,86 +18,97 @@
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600&amp;family=Inter:wght@400;500&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap">
 <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 <body>
 <a class="skip-link" href="#main">Saltar al contenido</a>
 <header class="site-header">
-  <div class="wrap header-in">
-    <a class="brand" href="index.html"><img src="assets/logos/logo-horizontal-negro.svg" alt="Montaña Dept" width="133" height="26"></a>
-    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu"><span class="menu-btn-label">Menú</span><span class="menu-btn-bars" aria-hidden="true"></span></button>
+  <div class="grid header-in">
+    <a class="brand" href="index.html"><img src="assets/logos/logo-horizontal-negro.svg" alt="Montaña Dept" width="113" height="22"></a>
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu"><span class="menu-btn-label">Menú</span></button>
     <nav id="menu" class="nav" aria-label="Principal">
+      <ul class="nav-list">
+        <li><a href="index.html">Inicio</a></li>
+        <li><a href="proyectos.html">Proyectos</a></li>
+        <li><a href="servicios.html">Servicios</a></li>
+        <li><a href="nosotros.html">Nosotros</a></li>
+        <li class="nav-only-mobile"><a href="contacto.html" aria-current="page">Contacto</a></li>
+      </ul>
+      <a class="header-cta" href="contacto.html"><span aria-hidden="true">→</span> Empecemos un proyecto</a>
+    </nav>
+  </div>
+</header>
+<main id="main">
+<section class="grid page-head page-head--plain" data-rv>
+  <p class="mono page-label">[ Contacto ]</p>
+  <h1 class="display page-title">Conversemos.</h1>
+  <p class="page-lead">Cuéntanos qué tienes en mente. Te respondemos pronto.</p>
+</section>
+<section class="grid contact" data-rv>
+  <address class="studio-card">
+    <p>Montaña Dept ©</p>
+    <p>Agencia creativa</p>
+    <p>Mail. <a href="mailto:contacto@montanadept.com">contacto@montanadept.com</a></p>
+    <p>IG. <a href="https://www.instagram.com/mntn_dept/" target="_blank" rel="noopener noreferrer">@mntn_dept</a></p>
+    <p>Santiago, Chile</p>
+  </address>
+
+  <!--
+    FORMULARIO SIN BACKEND. Para que envíe correos de verdad:
+    - Formspree: crear un formulario en formspree.io, poner su URL en action="" y enviar el FormData por fetch
+      (ver el comentario en assets/js/main.js, sección "formulario de contacto").
+    Hoy el envío arma un mailto: y deja el mensaje listo para enviar desde el correo de quien escribe.
+    - Netlify Forms: agregar data-netlify="true" y name="contacto" a este <form>.
+  -->
+  <form class="form" data-form>
+    <div class="field"><label class="mono" for="f-nombre">[ 01 ] Nombre</label><input id="f-nombre" name="nombre" type="text" autocomplete="name" required></div>
+    <div class="field"><label class="mono" for="f-correo">[ 02 ] Correo</label><input id="f-correo" name="correo" type="email" autocomplete="email" required></div>
+    <div class="field"><label class="mono" for="f-empresa">[ 03 ] Empresa o marca</label><input id="f-empresa" name="empresa" type="text" autocomplete="organization"></div>
+    <div class="field field--select"><label class="mono" for="f-necesidad">[ 04 ] Qué necesitas</label>
+      <select id="f-necesidad" name="necesidad" required><option value="" selected disabled>Elige una opción</option><option value="Branding">Branding</option><option value="Redes sociales">Redes sociales</option><option value="Publicidad">Publicidad</option><option value="Audiovisual">Audiovisual</option><option value="Otro">Otro</option></select></div>
+    <div class="field"><label class="mono" for="f-mensaje">[ 05 ] Mensaje</label><textarea id="f-mensaje" name="mensaje" rows="3" required></textarea></div>
+    <div><button class="send" type="submit">Enviar <span aria-hidden="true">→</span></button></div>
+    <div class="form-ready" id="form-ready" role="status" aria-live="polite" hidden>
+      <p class="form-ready-title mono">Tu mensaje está listo.</p>
+      <div class="form-ready-actions">
+        <a class="send send--link" id="form-mailto" href="mailto:contacto@montanadept.com">Enviar desde mi correo <span aria-hidden="true">→</span></a>
+        <button class="send send--ghost" id="form-copy" type="button">Copiar mensaje</button>
+      </div>
+      <p class="form-ready-note">¿No se abre? Escríbenos a <a href="mailto:contacto@montanadept.com">contacto@montanadept.com</a></p>
+    </div>
+  </form>
+</section>
+</main>
+<footer class="site-footer grain">
+  <div class="grid footer-in">
+    <a class="footer-brand" href="index.html"><img src="assets/logos/logo-vertical-blanco.svg" alt="Montaña Dept" width="96" height="77"></a>
+    <nav class="fcol fcol-nav" aria-label="Pie de página">
+      <h2 class="mono">[ Navegación ]</h2>
       <ul>
         <li><a href="index.html">Inicio</a></li>
         <li><a href="proyectos.html">Proyectos</a></li>
         <li><a href="servicios.html">Servicios</a></li>
         <li><a href="nosotros.html">Nosotros</a></li>
-        <li><a href="contacto.html" aria-current="page">Contacto</a></li>
+        <li><a href="contacto.html">Contacto</a></li>
       </ul>
     </nav>
-  </div>
-</header>
-<main id="main">
-<section class="wrap page-head">
-  <p class="eyebrow">Contacto</p>
-  <h1 class="display">Conversemos.</h1>
-  <p class="lead">Cuéntanos qué tienes en mente. Te respondemos pronto.</p>
-</section>
-
-<section class="section">
-  <div class="wrap contact-grid">
-    <dl class="contact-list">
-      <div><dt>Instagram</dt><dd><a href="https://www.instagram.com/mntn_dept/" target="_blank" rel="noopener noreferrer">@mntn_dept</a></dd></div>
-      <div><dt>Correo</dt><dd><a href="mailto:contacto@montanadept.com">contacto@montanadept.com</a></dd></div>
-      <div><dt>Ciudad</dt><dd>Santiago, Chile</dd></div>
-    </dl>
-
-    <!--
-      FORMULARIO SIN BACKEND. Para que envíe correos de verdad:
-      - Formspree: crear un formulario en formspree.io y enviar el FormData por fetch
-        (ver el comentario en assets/js/main.js, sección "formulario de contacto").
-      - Netlify Forms: agregar data-netlify="true" y name="contacto" a este <form>.
-    -->
-    <form class="form" data-form>
-      <div class="field"><label for="f-nombre">Nombre</label><input id="f-nombre" name="nombre" type="text" autocomplete="name" required></div>
-      <div class="field"><label for="f-correo">Correo</label><input id="f-correo" name="correo" type="email" autocomplete="email" required></div>
-      <div class="field"><label for="f-empresa">Empresa o marca</label><input id="f-empresa" name="empresa" type="text" autocomplete="organization"></div>
-      <div class="field"><label for="f-necesidad">Qué necesitas</label>
-        <select id="f-necesidad" name="necesidad" required><option value="" selected disabled>Elige una opción</option><option value="Branding">Branding</option><option value="Redes sociales">Redes sociales</option><option value="Publicidad">Publicidad</option><option value="Audiovisual">Audiovisual</option><option value="Otro">Otro</option></select></div>
-      <div class="field"><label for="f-mensaje">Mensaje</label><textarea id="f-mensaje" name="mensaje" required></textarea></div>
-      <div><button class="btn btn--dark" type="submit">Enviar mensaje <span aria-hidden="true">→</span></button></div>
-      <p class="form-msg" id="form-msg" role="status" aria-live="polite" hidden></p>
-    </form>
-  </div>
-</section>
-</main>
-<footer class="site-footer">
-  <div class="wrap">
-    <div class="footer-in">
-      <a class="footer-brand" href="index.html"><img src="assets/logos/logo-horizontal-blanco.svg" alt="Montaña Dept" width="320" height="62"></a>
-      <div class="footer-cols">
-        <nav aria-label="Pie de página">
-          <h2>Navegación</h2>
-          <ul>
-          <li><a href="index.html">Inicio</a></li>
-          <li><a href="proyectos.html">Proyectos</a></li>
-          <li><a href="servicios.html">Servicios</a></li>
-          <li><a href="nosotros.html">Nosotros</a></li>
-          <li><a href="contacto.html">Contacto</a></li>
-          </ul>
-        </nav>
-        <div>
-          <h2>Contacto</h2>
-          <ul>
-            <li><a href="https://www.instagram.com/mntn_dept/" target="_blank" rel="noopener noreferrer">Instagram @mntn_dept</a></li>
-            <li>Santiago, Chile</li>
-          </ul>
-        </div>
-      </div>
+    <div class="fcol fcol-contact">
+      <h2 class="mono">[ Contacto ]</h2>
+      <ul>
+        <li><a href="mailto:contacto@montanadept.com">contacto@montanadept.com</a></li>
+        <li><a href="https://www.instagram.com/mntn_dept/" target="_blank" rel="noopener noreferrer">Instagram @mntn_dept</a></li>
+      </ul>
     </div>
-    <div class="footer-bottom"><span>© 2026 Montaña Dept</span><span>Agencia creativa</span></div>
+    <div class="fcol fcol-geo">
+      <h2 class="mono">[ Coordenadas ]</h2>
+      <ul>
+        <li>33°27′S 70°40′W</li>
+        <li>Santiago, Chile</li>
+      </ul>
+    </div>
   </div>
+  <div class="grid footer-bottom mono"><span>© 2026 Montaña Dept</span><span>Agencia creativa</span></div>
 </footer>
 <script src="assets/js/proyectos.js" defer></script>
 <script src="assets/js/main.js" defer></script>

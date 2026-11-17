@@ -8,7 +8,7 @@ Para verlo en tu computador, abre `index.html` en el navegador.
 - `index.html`, `proyectos.html`, `servicios.html`, `nosotros.html`, `contacto.html`, `404.html`
 - `proyectos/<slug>.html`: una ficha por proyecto (HTML mínimo, el contenido sale de los datos)
 - `assets/js/proyectos.js`: **todos los datos de los proyectos** (única fuente)
-- `assets/js/main.js`: menú, grillas, filtro, fichas y formulario
+- `assets/js/main.js`: menú, índice y grilla de proyectos, filtro, fichas, reloj y formulario
 - `assets/css/styles.css`: estilos
 - `assets/img/proyectos/<slug>/`: imágenes de cada proyecto
 - `assets/logos/`: logos e isotipo
@@ -26,7 +26,8 @@ Para verlo en tu computador, abre `index.html` en el navegador.
    En `videos` puedes poner un `.mp4` subido a la carpeta o un link de YouTube / Vimeo.
 3. Copia `proyectos/fuku.html`, renómbralo a `proyectos/<slug>.html` y cambia solo
    `data-proyecto="fuku"` por `data-proyecto="<slug>"` en la etiqueta `<body>`.
-4. Listo: el proyecto aparece en el inicio y en Proyectos, con su numeración y el enlace "Siguiente proyecto".
+4. Listo: el proyecto aparece en el inicio (índice) y en Proyectos (lista y grilla), con su numeración y los enlaces "Anterior" / "Siguiente". El número fantasma "03" se calcula solo con la cantidad de proyectos.
+   En la ficha, `diseno` y `fotos` se acomodan en filas asimétricas que se repiten (1:1 + 4:3, dos 4:5, 16:9); los `videos` van a ancho completo. Cada imagen vacía muestra "[ IMAGEN PENDIENTE ]".
 
 Categorías disponibles para el filtro: `Branding`, `Redes sociales`, `Publicidad`, `Audiovisual`.
 

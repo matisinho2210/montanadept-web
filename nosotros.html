@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Nosotros | Montaña Dept</title>
 <meta name="description" content="Somos Montaña Dept, una agencia creativa de Santiago. Conoce al equipo y cómo trabajamos.">
-<meta name="theme-color" content="#fafaf8">
+<meta name="theme-color" content="#f3f3f1">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Montaña Dept">
 <meta property="og:locale" content="es_CL">
@@ -18,102 +18,91 @@
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600&amp;family=Inter:wght@400;500&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap">
 <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 <body>
 <a class="skip-link" href="#main">Saltar al contenido</a>
 <header class="site-header">
-  <div class="wrap header-in">
-    <a class="brand" href="index.html"><img src="assets/logos/logo-horizontal-negro.svg" alt="Montaña Dept" width="133" height="26"></a>
-    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu"><span class="menu-btn-label">Menú</span><span class="menu-btn-bars" aria-hidden="true"></span></button>
+  <div class="grid header-in">
+    <a class="brand" href="index.html"><img src="assets/logos/logo-horizontal-negro.svg" alt="Montaña Dept" width="113" height="22"></a>
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu"><span class="menu-btn-label">Menú</span></button>
     <nav id="menu" class="nav" aria-label="Principal">
-      <ul>
+      <ul class="nav-list">
         <li><a href="index.html">Inicio</a></li>
         <li><a href="proyectos.html">Proyectos</a></li>
         <li><a href="servicios.html">Servicios</a></li>
         <li><a href="nosotros.html" aria-current="page">Nosotros</a></li>
-        <li><a href="contacto.html">Contacto</a></li>
+        <li class="nav-only-mobile"><a href="contacto.html">Contacto</a></li>
       </ul>
+      <a class="header-cta" href="contacto.html"><span aria-hidden="true">→</span> Empecemos un proyecto</a>
     </nav>
   </div>
 </header>
 <main id="main">
-<section class="wrap page-head">
-  <p class="eyebrow">Nosotros</p>
-  <h1 class="display">Somos Montaña Dept.</h1>
-</section>
-
-<section class="section">
-  <div class="wrap about-grid">
-    <p class="lead">Somos una agencia creativa de Santiago. Hacemos branding, redes sociales, publicidad y audiovisual para marcas que quieren verse bien y decir algo.</p>
-    <p class="lead muted">Trabajamos cerca de cada cliente, con pocas capas y mucho oficio. Nos gusta entender el negocio antes de abrir el programa de diseño.</p>
+<section class="grid about-head" data-rv>
+  <p class="mono page-label">[ Nosotros ]</p>
+  <h1 class="display about-title">Somos Montaña Dept, una agencia creativa de Santiago.</h1>
+  <div class="about-text">
+    <p>Hacemos branding, redes sociales, publicidad y audiovisual para marcas que quieren verse bien y decir algo.</p>
+    <p>Trabajamos cerca de cada cliente, con pocas capas y mucho oficio. Nos gusta entender el negocio antes de abrir el programa de diseño.</p>
   </div>
 </section>
-
-<section class="section" aria-labelledby="t-valores">
-  <div class="wrap">
-    <div class="section-head"><h2 class="section-title" id="t-valores">Cómo trabajamos</h2></div>
-    <div class="values">
-      <div class="value"><h3>Escuchamos primero</h3><p>Antes de proponer, entendemos qué necesitas y a quién le hablas.</p></div>
-      <div class="value"><h3>Cuidamos el detalle</h3><p>Una marca se construye en lo grande y también en lo pequeño.</p></div>
-      <div class="value"><h3>Hablamos claro</h3><p>Plazos, procesos y precios simples. Sin letra chica.</p></div>
-    </div>
-  </div>
+<section class="block" aria-labelledby="t-valores" data-rv>
+  <div class="grid sec-label"><h2 class="mono" id="t-valores">[ Cómo trabajamos ]</h2></div>
+  <ol class="vrows">
+      <li class="grid vrow"><span class="mono vrow-n">[ 01 ]</span><h3 class="vrow-t">Escuchamos primero</h3><p class="vrow-d">Antes de proponer, entendemos qué necesitas y a quién le hablas.</p></li>
+      <li class="grid vrow"><span class="mono vrow-n">[ 02 ]</span><h3 class="vrow-t">Cuidamos el detalle</h3><p class="vrow-d">Una marca se construye en lo grande y también en lo pequeño.</p></li>
+      <li class="grid vrow"><span class="mono vrow-n">[ 03 ]</span><h3 class="vrow-t">Hablamos claro</h3><p class="vrow-d">Plazos, procesos y precios simples. Sin letra chica.</p></li>
+  </ol>
 </section>
-
-<section class="section" aria-labelledby="t-equipo">
-  <div class="wrap">
-    <div class="section-head"><h2 class="section-title" id="t-equipo">Equipo</h2></div>
-    <ul class="team">
+<section class="block" aria-labelledby="t-equipo" data-rv>
+  <div class="grid sec-label"><h2 class="mono" id="t-equipo">[ Equipo ]</h2></div>
+  <ul class="grid team">
       <li class="member">
-        <div class="frame r11"><div class="ph" role="img" aria-label="Foto pendiente de Matías Vergara"><span class="ph-label">Foto pendiente</span></div></div>
-        <h3>Matías Vergara</h3>
-        <p class="role">Director creativo</p>
-        <p class="bio">Bio pendiente</p>
+        <div class="frame r45"><div class="ph" role="img" aria-label="Foto pendiente de Matías Vergara"><span class="ph-label mono">[ Foto pendiente ]</span></div></div>
+        <dl class="mtable mono"><div><dt>Nombre</dt><dd>Matías Vergara</dd></div><div><dt>Rol</dt><dd>Director creativo</dd></div><div><dt>Bio</dt><dd>Bio pendiente</dd></div></dl>
       </li>
       <li class="member">
-        <div class="frame r11"><div class="ph" role="img" aria-label="Foto pendiente de Javier"><span class="ph-label">Foto pendiente</span></div></div>
-        <h3>Javier</h3>
-        <p class="role">Publicista</p>
-        <p class="bio">Bio pendiente</p>
+        <div class="frame r45"><div class="ph" role="img" aria-label="Foto pendiente de Javier"><span class="ph-label mono">[ Foto pendiente ]</span></div></div>
+        <dl class="mtable mono"><div><dt>Nombre</dt><dd>Javier</dd></div><div><dt>Rol</dt><dd>Publicista</dd></div><div><dt>Bio</dt><dd>Bio pendiente</dd></div></dl>
       </li>
       <li class="member">
-        <div class="frame r11"><div class="ph" role="img" aria-label="Foto pendiente de David"><span class="ph-label">Foto pendiente</span></div></div>
-        <h3>David</h3>
-        <p class="role">Filmmaker</p>
-        <p class="bio">Bio pendiente</p>
+        <div class="frame r45"><div class="ph" role="img" aria-label="Foto pendiente de David"><span class="ph-label mono">[ Foto pendiente ]</span></div></div>
+        <dl class="mtable mono"><div><dt>Nombre</dt><dd>David</dd></div><div><dt>Rol</dt><dd>Filmmaker</dd></div><div><dt>Bio</dt><dd>Bio pendiente</dd></div></dl>
       </li>
-    </ul>
-  </div>
+  </ul>
 </section>
 </main>
-<footer class="site-footer">
-  <div class="wrap">
-    <div class="footer-in">
-      <a class="footer-brand" href="index.html"><img src="assets/logos/logo-horizontal-blanco.svg" alt="Montaña Dept" width="320" height="62"></a>
-      <div class="footer-cols">
-        <nav aria-label="Pie de página">
-          <h2>Navegación</h2>
-          <ul>
-          <li><a href="index.html">Inicio</a></li>
-          <li><a href="proyectos.html">Proyectos</a></li>
-          <li><a href="servicios.html">Servicios</a></li>
-          <li><a href="nosotros.html">Nosotros</a></li>
-          <li><a href="contacto.html">Contacto</a></li>
-          </ul>
-        </nav>
-        <div>
-          <h2>Contacto</h2>
-          <ul>
-            <li><a href="https://www.instagram.com/mntn_dept/" target="_blank" rel="noopener noreferrer">Instagram @mntn_dept</a></li>
-            <li>Santiago, Chile</li>
-          </ul>
-        </div>
-      </div>
+<footer class="site-footer grain">
+  <div class="grid footer-in">
+    <a class="footer-brand" href="index.html"><img src="assets/logos/logo-vertical-blanco.svg" alt="Montaña Dept" width="96" height="77"></a>
+    <nav class="fcol fcol-nav" aria-label="Pie de página">
+      <h2 class="mono">[ Navegación ]</h2>
+      <ul>
+        <li><a href="index.html">Inicio</a></li>
+        <li><a href="proyectos.html">Proyectos</a></li>
+        <li><a href="servicios.html">Servicios</a></li>
+        <li><a href="nosotros.html">Nosotros</a></li>
+        <li><a href="contacto.html">Contacto</a></li>
+      </ul>
+    </nav>
+    <div class="fcol fcol-contact">
+      <h2 class="mono">[ Contacto ]</h2>
+      <ul>
+        <li><a href="mailto:contacto@montanadept.com">contacto@montanadept.com</a></li>
+        <li><a href="https://www.instagram.com/mntn_dept/" target="_blank" rel="noopener noreferrer">Instagram @mntn_dept</a></li>
+      </ul>
     </div>
-    <div class="footer-bottom"><span>© 2026 Montaña Dept</span><span>Agencia creativa</span></div>
+    <div class="fcol fcol-geo">
+      <h2 class="mono">[ Coordenadas ]</h2>
+      <ul>
+        <li>33°27′S 70°40′W</li>
+        <li>Santiago, Chile</li>
+      </ul>
+    </div>
   </div>
+  <div class="grid footer-bottom mono"><span>© 2026 Montaña Dept</span><span>Agencia creativa</span></div>
 </footer>
 <script src="assets/js/proyectos.js" defer></script>
 <script src="assets/js/main.js" defer></script>
