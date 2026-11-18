@@ -190,6 +190,29 @@ window.PROYECTOS = [
         ]
       },
       {
+        slug: "reels",
+        titulo: "Reels",
+        fecha: "2026",
+        creditos: ["DIRECCIÓN DE ARTE: MONTAÑA DEPT", "VIDEO: [ PENDIENTE ]", "CLIENTE: FUKU"],
+        bajada: "Reels y videos para redes sociales.",
+        card: { src: "assets/img/proyectos/fuku/sesiones/reel-01-frame.jpg", w: 360, h: 640 },
+        layout: "editorial",
+        fotos: [
+          { src: "assets/img/proyectos/fuku/sesiones/reel-01.gif", w: 360, h: 640, caption: "Mes 1 · 10.06" },
+          { src: "assets/img/proyectos/fuku/sesiones/reel-02.gif", w: 360, h: 640, caption: "Día del padre · 21.06" },
+          { src: "assets/img/proyectos/fuku/sesiones/reel-03.gif", w: 360, h: 640, caption: "Entradas · 26.06" },
+          { src: "assets/img/proyectos/fuku/sesiones/reel-04.gif", w: 360, h: 640, caption: "Reels · 21.07 · Felices" },
+          { src: "assets/img/proyectos/fuku/sesiones/reel-05.gif", w: 360, h: 640, caption: "Reels · 21.07 · Horario" },
+          { src: "assets/img/proyectos/fuku/sesiones/reel-06.gif", w: 360, h: 640, caption: "Reels · 21.07 · Palillos" },
+          { src: "assets/img/proyectos/fuku/sesiones/reel-07.gif", w: 360, h: 640, caption: "Reels · 21.07 · Post it" },
+          { src: "assets/img/proyectos/fuku/sesiones/reel-08.gif", w: 480, h: 270, caption: "Carrusel horario · 12.08" },
+          { src: "assets/img/proyectos/fuku/sesiones/reel-09.gif", w: 480, h: 270, caption: "Estreno Kim Chicken · 22.08" },
+          { src: "assets/img/proyectos/fuku/sesiones/reel-10.gif", w: 360, h: 640, caption: "Promo ramen · 27.08" },
+          { src: "assets/img/proyectos/fuku/sesiones/reel-11.gif", w: 360, h: 640, caption: "Septiembre · Delivery" },
+          { src: "assets/img/proyectos/fuku/sesiones/reel-12.gif", w: 480, h: 270, caption: "Porkbelly · 21.10" }
+        ]
+      },
+      {
         slug: "menu",
         titulo: "Menú",
         fecha: "2026",
