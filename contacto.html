@@ -56,14 +56,9 @@
     <p>Santiago, Chile</p>
   </address>
 
-  <!--
-    FORMULARIO SIN BACKEND. Para que envíe correos de verdad:
-    - Formspree: crear un formulario en formspree.io, poner su URL en action="" y enviar el FormData por fetch
-      (ver el comentario en assets/js/main.js, sección "formulario de contacto").
-    Hoy el envío arma un mailto: y deja el mensaje listo para enviar desde el correo de quien escribe.
-    - Netlify Forms: agregar data-netlify="true" y name="contacto" a este <form>.
-  -->
+  <!-- Envío por Web3Forms: la access key va en assets/js/main.js (WEB3FORMS_KEY). -->
   <form class="form" data-form>
+    <input type="checkbox" name="botcheck" class="sr-only" tabindex="-1" autocomplete="off" aria-hidden="true">
     <div class="field"><label class="mono" for="f-nombre">[ 01 ] Nombre</label><input id="f-nombre" name="nombre" type="text" autocomplete="name" required></div>
     <div class="field"><label class="mono" for="f-correo">[ 02 ] Correo</label><input id="f-correo" name="correo" type="email" autocomplete="email" required></div>
     <div class="field"><label class="mono" for="f-empresa">[ 03 ] Empresa o marca</label><input id="f-empresa" name="empresa" type="text" autocomplete="organization"></div>
@@ -72,8 +67,8 @@
     <div class="field"><label class="mono" for="f-mensaje">[ 05 ] Mensaje</label><textarea id="f-mensaje" name="mensaje" rows="3" required></textarea></div>
     <div><button class="send" type="submit">Enviar <span aria-hidden="true">→</span></button></div>
     <div class="form-ready" id="form-ready" role="status" aria-live="polite" hidden>
-      <p class="form-ready-title mono">Tu mensaje está listo.</p>
-      <div class="form-ready-actions">
+      <p class="form-ready-title mono" id="form-ready-title">Tu mensaje está listo.</p>
+      <div class="form-ready-actions" id="form-ready-actions">
         <a class="send send--link" id="form-mailto" href="mailto:contacto@montanadept.com">Enviar desde mi correo <span aria-hidden="true">→</span></a>
         <button class="send send--ghost" id="form-copy" type="button">Copiar mensaje</button>
       </div>
