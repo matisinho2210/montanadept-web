@@ -1022,8 +1022,9 @@
 
   /* ---------- reloj y fecha de Santiago ---------- */
   var reloj = doc.getElementById('reloj');
+  var relojes = doc.querySelectorAll('[data-reloj]');
   var fechaEl = doc.getElementById('fecha');
-  if (reloj || fechaEl) {
+  if (reloj || fechaEl || relojes.length) {
     var fmt = null;
     var fmtF = null;
     try {
@@ -1033,6 +1034,7 @@
     var tick = function () {
       var now = new Date();
       if (reloj && fmt) reloj.textContent = 'SCL ' + fmt.format(now).replace(/\s/g, '');
+      if (fmt) Array.prototype.forEach.call(relojes, function (el) { el.textContent = 'Santiago ' + fmt.format(now).replace(/\s/g, ''); });
       if (fechaEl && fmtF) fechaEl.textContent = fmtF.format(now).replace(/\s/g, '').replace(/[-.]/g, '/');
     };
     tick();
