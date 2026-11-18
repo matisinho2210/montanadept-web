@@ -53,11 +53,13 @@ Cada serie admite campos opcionales para presentar la sesión (si faltan `titula
   titular: "Frase grande de la sesión.",
   descripcion: "Párrafo que cuenta qué fue y en qué consistió.",
   datos: [ { k: "Tipo", v: "Lifestyle" }, { k: "Piezas", v: "05 fotos" } ],   // mini tabla
-  hero: { src: "assets/img/.../foto.jpg", w: 2000, h: 1333, pos: "50% 60%" }, // panorámica 21:9 (opcional); pos = object-position
-  etiquetas: ["SANTIAGO, CHILE", "(Ver galería ↓)"],                          // micro-etiquetas sobre el hero (opcional)
+  fecha: "2026",                                                              // pie de la columna izquierda del índice (opcional)
+  creditos: ["DIRECCIÓN DE ARTE: MONTAÑA DEPT", "FOTOGRAFÍA: [ PENDIENTE ]"], // vista CRÉDITOS (opcional)
   card: { src: "assets/img/.../foto.jpg", w: 1333, h: 2000 },                 // imagen de la tarjeta; si falta, la 1ª foto
   layout: "editorial", fotos: [ ... ] }
 ```
+
+Opcional por proyecto: `sesionesIntro: "texto"` (párrafo gris de la sección Sesiones; si falta se usa "Cada sesión parte de una idea simple y la desarrollamos en fotos.").
 
 La sección "Sesiones" muestra un título, un párrafo gris, un índice de tarjetas (una por serie, con link "Ver sesión ↓")
 y luego el bloque de cada serie seguido de su galería.
