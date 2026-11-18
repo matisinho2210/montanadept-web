@@ -490,9 +490,6 @@ a.pt-img:focus-visible { outline-offset: -3px; }
 .ses-plus { position: absolute; top: -4px; right: 0; width: 36px; height: 36px; display: grid; place-items: center; background: none; border: 0; padding: 0; font-size: 22px; line-height: 1; color: var(--ink); cursor: pointer; }
 .ses-foot { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; align-self: end; margin-top: 18px; }
 .ses-year { color: var(--ink); }
-.ses-tog button { background: none; border: 0; padding: 4px 0; font: inherit; letter-spacing: inherit; color: var(--gray); cursor: pointer; text-transform: uppercase; }
-.ses-tog button[aria-pressed="true"] { color: var(--ink); }
-.ses-tog > span { color: var(--gray); }
 .ses-main { min-width: 0; }
 .ses-main.is-anim { animation: ses-in 0.35s ease both; }
 @keyframes ses-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
@@ -504,14 +501,14 @@ a.pt-img:focus-visible { outline-offset: -3px; }
 .ses-ph:not([data-ar]) { aspect-ratio: 3 / 2; }
 .ses-ph-btn { position: absolute; inset: 0; width: 100%; height: 100%; }
 .ses-ph-btn img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ses-vid { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; background: #000; display: none; }
+.ses-row.is-open .ses-vid { display: block; }
+.ses-row.is-open .ses-ph-btn[data-lb-video] { display: none; }
+.play-tag { position: absolute; left: 8px; bottom: 8px; z-index: 1; padding: 3px 6px; background: var(--ink); color: var(--paper); font-size: 11px; line-height: 1; pointer-events: none; }
 .ses-row.is-open .ses-pics { display: grid; grid-template-columns: 1fr; gap: var(--g); }
 .ses-row.is-open .ses-fig { width: 100%; }
 .ses-row.is-open .ses-fig figcaption { display: block; }
 .ses-row.is-open .ses-ph { height: auto; width: 100%; }
-.ses-credits { display: grid; gap: 18px; align-content: start; }
-.ses-cred { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; text-transform: uppercase; }
-.ses-titular { margin: 8px 0 0; font-family: var(--f-display); font-weight: 500; font-size: clamp(24px, 2.6vw, 38px); line-height: 1.08; letter-spacing: -0.02em; max-width: 20ch; overflow-wrap: break-word; }
-.ses-desc { margin: 0; font-size: 16px; line-height: 1.5; max-width: 52ch; color: var(--gray-text); }
 @media (min-width: 600px) { .ses-row.is-open .ses-pics { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (min-width: 900px) {
   .ses-row { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--g); }
@@ -535,6 +532,8 @@ body.lb-lock { overflow: hidden; }
 .lb-close { color: #fff; font: inherit; letter-spacing: inherit; text-transform: uppercase; padding: 10px 0; }
 .lb-close:hover, .lb-nav:hover { text-decoration: underline; text-underline-offset: 4px; }
 .lb-stage { display: grid; place-items: center; min-height: 0; padding: 0 var(--m); }
+.lb-vid { width: auto; height: auto; max-width: 92vw; max-height: 86vh; background: #000; }
+.lb-vid[hidden], .lb-img[hidden] { display: none; }
 .lb-img { width: auto; height: auto; max-width: 92vw; max-height: 86vh; object-fit: contain; }
 .lb-nav { position: absolute; bottom: 16px; color: #fff; font: 400 28px/1 var(--f-mono); padding: 12px 18px; }
 .lb-prev { left: var(--m); } .lb-next { right: var(--m); }
@@ -542,7 +541,7 @@ body.lb-lock { overflow: hidden; }
 @media (min-width: 900px) {
   .lb-nav { bottom: auto; top: 50%; transform: translateY(-50%); }
 }
-@media (max-width: 899px) { .lb-img { max-height: 76vh; } }
+@media (max-width: 899px) { .lb-img, .lb-vid { max-height: 76vh; } }
 
 /* ---------- diseño: manual de marca y carruseles ---------- */
 @media (min-width: 900px) {
