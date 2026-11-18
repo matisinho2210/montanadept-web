@@ -1081,32 +1081,37 @@
 
   /* ---------- formulario de contacto ---------- */
   /*
-   * Sin backend: al enviar se arma un enlace mailto: con todos los campos y se
-   * muestra un bloque "Tu mensaje está listo" (enlace + copiar mensaje).
-   *
-   * PARA REEMPLAZAR POR FORMSPREE (futuro):
-   *  1. Crear el formulario en formspree.io y copiar su URL (https://formspree.io/f/XXXXXXXX).
-   *  2. En contacto.html poner action="https://formspree.io/f/XXXXXXXX" method="post" en el <form>.
-   *  3. En el submit, en vez de armar el mailto, hacer:
-   *       fetch(form.action, { method: 'POST', body: new FormData(form),
-   *         headers: { Accept: 'application/json' } })
-   *         .then(function (r) { mostrar éxito si r.ok, o error si no; });
-   *  4. Permitir https://formspree.io en connect-src de la CSP del sitio publicado
-   *     (la vista previa en iframe lo bloqueará).
+   * Envía por Web3Forms (https://web3forms.com) a contacto@montanadept.com.
+   * La access key es pública por diseño (va en el front). Si está vacía o el
+   * envío falla, se muestra el respaldo: enlace mailto + copiar mensaje.
    */
+  var WEB3FORMS_KEY = '226cccf3-619f-4bb7-9870-dc3758a8f76b';
   var form = doc.querySelector('form[data-form]');
   if (form) {
     var ready = doc.getElementById('form-ready');
+    var readyTitle = doc.getElementById('form-ready-title');
+    var readyActions = doc.getElementById('form-ready-actions');
     var mailLink = doc.getElementById('form-mailto');
     var copyBtn = doc.getElementById('form-copy');
+    var sendBtn = form.querySelector('button[type="submit"]');
     var mailBody = '';
     var copyTimer = null;
+    var sending = false;
     var val = function (name) {
       var el = form.elements[name];
       return el ? String(el.value || '').trim() : '';
     };
+    var showReady = function (title, withFallback) {
+      if (readyTitle) readyTitle.textContent = title;
+      if (readyActions) readyActions.hidden = !withFallback;
+      if (ready) {
+        ready.hidden = false;
+        if (ready.scrollIntoView) ready.scrollIntoView({ block: 'nearest' });
+      }
+    };
     form.addEventListener('submit', function (e) {
       e.preventDefault();
+      if (sending) return;
       if (!form.checkValidity()) { form.reportValidity(); return; }
       var quien = val('empresa') || val('nombre');
       var subject = 'Nuevo proyecto — ' + quien;
@@ -1120,10 +1125,29 @@
           '&body=' + encodeURIComponent(mailBody);
       }
       if (copyBtn) copyBtn.textContent = 'Copiar mensaje';
-      if (ready) {
-        ready.hidden = false;
-        if (mailLink && mailLink.scrollIntoView) mailLink.scrollIntoView({ block: 'nearest' });
-      }
+
+      if (!WEB3FORMS_KEY || !window.fetch) { showReady('Tu mensaje está listo.', true); return; }
+
+      var data = new FormData(form);
+      data.append('access_key', WEB3FORMS_KEY);
+      data.append('subject', subject);
+      data.append('from_name', 'Web Montaña Dept');
+      data.append('replyto', val('correo'));
+      sending = true;
+      if (sendBtn) { sendBtn.disabled = true; sendBtn.firstChild.nodeValue = 'Enviando '; }
+      fetch('https://api.web3forms.com/submit', { method: 'POST', body: data, headers: { Accept: 'application/json' } })
+        .then(function (r) { return r.json().then(function (j) { return r.ok && j && j.success; }); })
+        .catch(function () { return false; })
+        .then(function (ok) {
+          sending = false;
+          if (sendBtn) { sendBtn.disabled = false; sendBtn.firstChild.nodeValue = 'Enviar '; }
+          if (ok) {
+            form.reset();
+            showReady('Mensaje enviado. Te respondemos pronto.', false);
+          } else {
+            showReady('No se pudo enviar. Mándalo desde tu correo:', true);
+          }
+        });
     });
     if (copyBtn) {
       copyBtn.addEventListener('click', function () {
