@@ -67,6 +67,9 @@
 
   /* ---------- miniaturas de cada proyecto (para la lista expandible y la ficha) ---------- */
   function okFoto(f) { return f && f.src; }
+  // Imagen fija de una pieza: el póster si es video, la propia imagen si no
+  function stillOf(f) { return f && f.video && f.poster ? { src: f.poster, w: f.w, h: f.h } : f; }
+  var PLAY_TAG = '<span class="play-tag mono" aria-hidden="true">▶</span>';
   function dimsOf(f) {
     var w = Number(f.w), h = Number(f.h);
     return isFinite(w) && isFinite(h) && w > 0 && h > 0 ? [w, h] : null;
@@ -78,10 +81,13 @@
     var page = pageUrl(p.slug);
     if (sinPortada && p.portada) seen[p.portada] = true;
     var add = function (f, l2, l3, hash) {
-      if (!okFoto(f) || seen[f.src] || out.length >= max) return;
+      if (!okFoto(f)) return;
+      var vid = !!(f.video && f.poster);
+      f = stillOf(f);
+      if (seen[f.src] || out.length >= max) return;
       seen[f.src] = true;
       var d = dimsOf(f);
-      out.push({ src: f.src, w: d ? d[0] : 0, h: d ? d[1] : 0, linea2: l2, linea3: l3, href: page + (hash ? '#' + hash : '') });
+      out.push({ src: f.src, video: vid, w: d ? d[0] : 0, h: d ? d[1] : 0, linea2: l2, linea3: l3, href: page + (hash ? '#' + hash : '') });
     };
     var series = Array.isArray(p.series) ? p.series : [];
     var dis = Array.isArray(p.diseno) ? p.diseno.filter(function (s) { return s && Array.isArray(s.fotos); }) : [];
@@ -120,7 +126,7 @@
       th.forEach(function (t, k) {
         var dim = t.w ? ' width="' + t.w + '" height="' + t.h + '"' : '';
         lis += '<li class="pt"><figure><a class="pt-img" href="' + esc(t.href) + '" aria-label="' + esc(p.nombre + ' — ' + t.linea2) + '">' +
-          '<img src="' + esc(asset(t.src)) + '" alt=""' + dim + ' loading="lazy" decoding="async"></a>' +
+          '<img src="' + esc(asset(t.src)) + '" alt=""' + dim + ' loading="lazy" decoding="async">' + (t.video ? PLAY_TAG : '') + '</a>' +
           '<figcaption class="pt-cap mono"><span>' + esc(p.nombre) + '</span><span>' + esc(t.linea2) + '</span><span>' + esc(t.linea3) + '</span></figcaption></figure></li>';
       });
     }
@@ -320,9 +326,52 @@
     var w = Number(f.w), h = Number(f.h), dims = isFinite(w) && isFinite(h) && w > 0 && h > 0;
     return '<button type="button" class="lb-open ' + cls + '" data-lb="' + esc(grp) + '" data-lb-title="' + esc(title) + '"' +
       (ar && dims ? ' data-ar="' + w + '/' + h + '"' : '') +
-      ' aria-label="' + esc('Ampliar: ' + alt) + '">' +
-      '<img src="' + esc(asset(f.src)) + '" alt="' + esc(alt) + '"' + (dims ? ' width="' + w + '" height="' + h + '"' : '') +
-      ' loading="lazy" decoding="async"></button>';
+      (f.video ? ' data-lb-video="' + esc(asset(f.src)) + '"' : '') +
+      ' aria-label="' + esc((f.video ? 'Ver video: ' : 'Ampliar: ') + alt) + '">' +
+      '<img src="' + esc(asset(f.video && f.poster ? f.poster : f.src)) + '" alt="' + esc(alt) + '"' + (dims ? ' width="' + w + '" height="' + h + '"' : '') +
+      ' loading="lazy" decoding="async">' + (f.video ? PLAY_TAG : '') + '</button>';
+  }
+  // Video de una sesión (vista expandida): sin src hasta que la fila se abre; w/h reservan el espacio
+  function sesVideoTag(f, alt, dims, w, h) {
+    if (!f.video) return '';
+    return '<video class="ses-vid" controls playsinline muted loop preload="none" data-src="' + esc(asset(f.src)) + '"' +
+      (f.poster ? ' poster="' + esc(asset(f.poster)) + '"' : '') + (dims ? ' width="' + w + '" height="' + h + '"' : '') +
+      ' aria-label="' + esc(alt + ' (video)') + '"></video>';
+  }
+  // Videos de las sesiones: cargan al abrir la fila, se reproducen solo si se ven (>= 50 %) y hay movimiento permitido
+  var sesIO = null;
+  function sesPlay(v) { var pr = v.play(); if (pr && pr.catch) pr.catch(function () {}); }
+  function sesStop(v) { v.dataset.sys = String(Date.now()); v.pause(); }
+  function sesVideoSync(row) {
+    var open = row.classList.contains('is-open');
+    Array.prototype.forEach.call(row.querySelectorAll('.ses-vid'), function (v) {
+      if (!open) { sesStop(v); return; }
+      if (!v.getAttribute('src')) { v.preload = 'metadata'; v.src = v.getAttribute('data-src'); }
+      if (sesIO) { sesIO.unobserve(v); sesIO.observe(v); }
+    });
+  }
+  function initSesVideos(scope) {
+    var vids = scope.querySelectorAll('.ses-vid');
+    if (!vids.length) return;
+    Array.prototype.forEach.call(vids, function (v) {
+      v.muted = true;
+      v.addEventListener('pause', function () { if (Date.now() - Number(v.dataset.sys || 0) > 400) v.dataset.userPaused = '1'; });
+      v.addEventListener('play', function () { delete v.dataset.userPaused; });
+    });
+    if ('IntersectionObserver' in window) {
+      sesIO = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) {
+          var v = en.target;
+          var row = v.closest('.ses-row');
+          if (en.intersectionRatio >= 0.5 && row && row.classList.contains('is-open')) {
+            if (motionOK() && !v.dataset.userPaused && v.paused) sesPlay(v);
+          } else if (!v.paused) {
+            sesStop(v);
+          }
+        });
+      }, { threshold: [0, 0.5] });
+    }
+    Array.prototype.forEach.call(scope.querySelectorAll('.ses-row.is-open'), sesVideoSync);
   }
   // Retícula editorial: pares 6+6; impar suelta a la izquierda (1–6); tres seguidas 4+4+4; horizontales a ancho completo
   function editorialRows(fotos, cell) {
@@ -366,13 +415,14 @@
     p.series.forEach(function (s, si) {
       var fotos = serieFotos(s);
       if (!fotos.length) return;
-      var img = s.card && s.card.src ? s.card : fotos[0];
+      var img = s.card && s.card.src ? s.card : stillOf(fotos[0]);
+      var vid = !!(fotos[0] && fotos[0].video);
       var w = Number(img.w), h = Number(img.h), dims = isFinite(w) && isFinite(h) && w > 0 && h > 0;
       var titulo = s.titulo || ('Serie ' + pad(si + 1));
       var desc = String(s.bajada || s.descripcion || '').replace(/\s*\n\s*/g, ' ').trim();
       var k = cards.length;
       cards.push('<li class="ses-card ' + (k % 2 === 0 ? 'ses-card--tall' : 'ses-card--sq') + '">' +
-        '<span class="ses-card-img"><img src="' + esc(asset(img.src)) + '" alt=""' + (dims ? ' width="' + w + '" height="' + h + '"' : '') + ' loading="lazy" decoding="async"></span>' +
+        '<span class="ses-card-img"><img src="' + esc(asset(img.src)) + '" alt=""' + (dims ? ' width="' + w + '" height="' + h + '"' : '') + ' loading="lazy" decoding="async">' + (vid ? PLAY_TAG : '') + '</span>' +
         '<h4 class="ses-card-t">' + esc(titulo) + '</h4>' +
         (desc ? '<p class="ses-card-d">' + esc(desc) + '</p>' : '') +
         '<a class="ses-card-l mono" href="#' + esc(serieAnchor(s, si)) + '" data-ses-link>Ver sesión <span aria-hidden="true">↗</span>' +
@@ -400,14 +450,10 @@
         var w = Number(f.w), h = Number(f.h), dims = isFinite(w) && isFinite(h) && w > 0 && h > 0;
         var alt = p.nombre + ' — ' + titulo + ', foto ' + (i + 1);
         return '<li class="ses-fig"><figure><div class="ses-ph"' + (dims ? ' data-ar="' + w + '/' + h + '"' : '') + '>' +
-          photoBtn('ses-ph-btn', f, alt, grp, titulo, false) + '</div>' +
+          photoBtn('ses-ph-btn', f, alt, grp, titulo, false) + sesVideoTag(f, alt, dims, w, h) + '</div>' +
           '<figcaption class="mono">(' + pad(i + 1) + ')</figcaption></figure></li>';
       }).join('');
-      var cred = (Array.isArray(s.creditos) ? s.creditos : []).map(function (c) { return '<li>' + esc(c) + '</li>'; }).join('');
-      var credHTML = (cred ? '<ul class="ses-cred mono">' + cred + '</ul>' : '') +
-        (s.titular ? '<p class="ses-titular">' + esc(s.titular) + '</p>' : '') +
-        (s.descripcion ? '<p class="ses-desc">' + esc(s.descripcion) + '</p>' : '');
-      rows.push('<li class="ses-row' + (open ? ' is-open' : '') + '" id="' + esc(id) + '" data-view="img">' +
+      rows.push('<li class="ses-row' + (open ? ' is-open' : '') + '" id="' + esc(id) + '">' +
         '<div class="ses-side">' +
           '<h4 class="ses-name mono" tabindex="-1"><span>' + esc(titulo) + '</span></h4>' +
           '<p class="ses-meta mono">' + esc(meta) + '</p>' +
@@ -415,34 +461,21 @@
             '<span aria-hidden="true" class="ses-plus-g">' + (open ? '−' : '+') + '</span><span class="sr-only">' + esc('Expandir sesión: ' + titulo) + '</span></button>' +
           '<div class="ses-foot mono">' +
             '<span class="ses-year">' + esc(s.fecha || '') + '</span>' +
-            '<span class="ses-tog" role="group" aria-label="' + esc('Vista de ' + titulo) + '">' +
-              '<button type="button" data-ses-view="img" aria-pressed="true">IMÁGENES</button>' +
-              '<span aria-hidden="true"> / </span>' +
-              '<button type="button" data-ses-view="cred" aria-pressed="false">CRÉDITOS</button></span>' +
           '</div>' +
         '</div>' +
         '<div class="ses-main" id="' + esc(id) + '-pics">' +
           '<ul class="ses-pics">' + figs + '</ul>' +
-          '<div class="ses-credits" hidden>' + (credHTML || '<p class="ses-desc mono">Créditos pendientes.</p>') + '</div>' +
         '</div></li>');
     });
     if (!rows.length) return '';
     return '<ol class="ses-folders" id="sesiones-indice">' + rows.join('') + '</ol>';
-  }
-  function sesSetView(row, view) {
-    row.setAttribute('data-view', view);
-    Array.prototype.forEach.call(row.querySelectorAll('[data-ses-view]'), function (b) {
-      b.setAttribute('aria-pressed', b.getAttribute('data-ses-view') === view ? 'true' : 'false');
-    });
-    row.querySelector('.ses-pics').hidden = view !== 'img';
-    row.querySelector('.ses-credits').hidden = view !== 'cred';
-    sesAnimate(row);
   }
   function sesSetOpen(row, open) {
     row.classList.toggle('is-open', open);
     var b = row.querySelector('[data-ses-plus]');
     b.setAttribute('aria-expanded', open ? 'true' : 'false');
     b.querySelector('.ses-plus-g').textContent = open ? '−' : '+';
+    sesVideoSync(row);
     sesAnimate(row);
   }
   // Con #sesion-<slug> en la URL: expande esa fila y baja hasta ella
@@ -453,7 +486,6 @@
     Array.prototype.forEach.call(root.querySelectorAll('.ses-row'), function (r) { if (r.id === id) row = r; });
     if (!row) return;
     sesSetOpen(row, true);
-    sesSetView(row, 'img');
     row.scrollIntoView({ behavior: 'auto', block: 'start' });
   }
   function sesAnimate(row) {
@@ -808,6 +840,7 @@
         '</section>' + rest;
       applyAspect(root);
       initCarousels(root);
+      initSesVideos(root);
       sesFromHash(root);
       toTop();
     }
@@ -826,7 +859,7 @@
     el.innerHTML =
       '<div class="lb-bar mono"><p class="lb-info" aria-live="polite"><span class="lb-count"></span> <span class="lb-title"></span></p>' +
       '<button type="button" class="lb-close">Cerrar <span aria-hidden="true">✕</span></button></div>' +
-      '<div class="lb-stage"><img class="lb-img" alt=""></div>' +
+      '<div class="lb-stage"><img class="lb-img" alt=""><video class="lb-vid" controls playsinline muted loop preload="metadata" hidden></video></div>' +
       '<button type="button" class="lb-nav lb-prev" aria-label="Foto anterior"><span aria-hidden="true">←</span></button>' +
       '<button type="button" class="lb-nav lb-next" aria-label="Foto siguiente"><span aria-hidden="true">→</span></button>';
     body.appendChild(el);
@@ -849,8 +882,25 @@
   function lbShow() {
     var it = lbState.items[lbState.i];
     var img = lb.querySelector('.lb-img');
-    img.src = it.src;
-    img.alt = it.alt;
+    var vid = lb.querySelector('.lb-vid');
+    vid.pause();
+    vid.removeAttribute('src');
+    vid.removeAttribute('poster');
+    if (it.video) {
+      img.hidden = true;
+      vid.hidden = false;
+      vid.muted = true;
+      vid.poster = it.src;
+      vid.src = it.video;
+      vid.setAttribute('aria-label', it.alt + ' (video)');
+      if (it.w && it.h) { vid.setAttribute('width', it.w); vid.setAttribute('height', it.h); }
+      if (motionOK()) { var pr = vid.play(); if (pr && pr.catch) pr.catch(function () {}); }
+    } else {
+      vid.hidden = true;
+      img.hidden = false;
+      img.src = it.src;
+      img.alt = it.alt;
+    }
     lb.querySelector('.lb-count').textContent = pad(lbState.i + 1) + ' / ' + pad(lbState.items.length);
     lb.querySelector('.lb-title').textContent = it.title ? '— ' + it.title : '';
     var multi = lbState.items.length > 1;
@@ -860,7 +910,7 @@
       [1, -1].forEach(function (d) {
         var n = lbState.items[(lbState.i + d + lbState.items.length) % lbState.items.length];
         var pre = new Image();
-        pre.src = n.src;
+        pre.src = n.src; // póster si es video
       });
     }
   }
@@ -876,7 +926,8 @@
     var btns = all;
     lbState.items = btns.map(function (b) {
       var im = b.querySelector('img');
-      return { src: im.getAttribute('src'), alt: im.getAttribute('alt') || '', title: b.getAttribute('data-lb-title') || '', btn: b };
+      return { src: im.getAttribute('src'), video: b.getAttribute('data-lb-video') || '', w: im.getAttribute('width'), h: im.getAttribute('height'),
+        alt: im.getAttribute('alt') || '', title: b.getAttribute('data-lb-title') || '', btn: b };
     });
     var start = btns.indexOf(btn);
     lbState.i = Math.max(0, start);
@@ -892,6 +943,10 @@
     if (!lb || lb.hidden) return;
     lb.hidden = true;
     lb.querySelector('.lb-img').removeAttribute('src');
+    var lv = lb.querySelector('.lb-vid');
+    lv.pause();
+    lv.removeAttribute('src');
+    lv.removeAttribute('poster');
     body.classList.remove('lb-lock');
     Array.prototype.forEach.call(body.children, function (el) { if (el !== lb) { el.removeAttribute('inert'); el.removeAttribute('aria-hidden'); } });
     var back = lbState.opener;
@@ -907,26 +962,18 @@
     var t = doc.getElementById((a.getAttribute('href') || '').slice(1));
     if (!t) return;
     e.preventDefault();
-    if (t.classList.contains('ses-row')) { sesSetOpen(t, true); sesSetView(t, 'img'); }
+    if (t.classList.contains('ses-row')) sesSetOpen(t, true);
     t.scrollIntoView({ behavior: motionOK() ? 'smooth' : 'auto', block: 'start' });
     if (history.replaceState) history.replaceState(null, '', a.getAttribute('href'));
     var h = t.querySelector('.ses-name');
     if (h) h.focus({ preventScroll: true });
   });
   doc.addEventListener('click', function (e) {
-    var tg = e.target.closest ? e.target.closest('[data-ses-plus], [data-ses-view]') : null;
+    var tg = e.target.closest ? e.target.closest('[data-ses-plus]') : null;
     if (!tg) return;
     var row = tg.closest('.ses-row');
     if (!row) return;
-    if (tg.hasAttribute('data-ses-plus')) {
-      var open = !row.classList.contains('is-open');
-      sesSetOpen(row, open);
-      if (open && row.getAttribute('data-view') !== 'img') sesSetView(row, 'img');
-    } else {
-      var v = tg.getAttribute('data-ses-view');
-      if (v === 'cred' && !row.classList.contains('is-open')) sesSetOpen(row, true);
-      sesSetView(row, v);
-    }
+    sesSetOpen(row, !row.classList.contains('is-open'));
   });
   doc.addEventListener('keydown', function (e) {
     if (!lb || lb.hidden) return;

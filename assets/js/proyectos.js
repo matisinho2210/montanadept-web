@@ -43,18 +43,18 @@
  *          layout: "editorial",          // "editorial" = retícula asimétrica sin recorte (ideal fotos verticales)
  *                                        // "grilla"    = hoja de contacto 3 / 2 / 1 columnas, proporción 3:2
  *          fotos: [ { src: "assets/img/proyectos/<slug>/sesiones/foto-01.jpg", w: 1333, h: 2000 }, ... ]
+ *                 // video en una sesión: { src: ".../reel-01.mp4", poster: ".../reel-01-poster.jpg", w: 720, h: 1280, video: true, caption: "..." }
+ *                 // (MP4 H.264 < 3.4 MB; w/h = medidas reales del MP4. En la hoja de contacto y las portadas sale el póster con "▶";
+ *                 //  expandida y en el visor es un <video> con controles. Un GIF también vale como imagen normal.)
  *        }
  *      ]
  *      w y h son las medidas reales en píxeles: se usan para reservar el espacio y mantener la proporción.
- *      Campos opcionales de presentación por serie (si faltan titular y descripcion, la serie se ve como antes):
  *      Campos opcionales por serie (la ficha las muestra como portada + índice por carpetas):
  *        slug:        "sandwich"   // ancla #sesion-sandwich de la fila del índice; si falta, "serie-<n>"
  *        bajada:      "Línea 1.\nLínea 2."  // texto chico gris de la portada (se une en una línea, máx. 2 líneas visibles); si falta usa descripcion
- *        titular:     "Frase grande"       // se muestra en la vista CRÉDITOS de la serie
- *        descripcion: "Párrafo..."         // se muestra en la vista CRÉDITOS de la serie
+ *        descripcion: "Párrafo..."         // solo respaldo de bajada (no se muestra en otro lugar)
  *        datos:       [ { k: "Tipo", v: "Lifestyle" }, ... ]   // el valor de "Tipo" sale en "CLIENTE | TIPO" (si falta: "SESIÓN")
  *        fecha:       "2026"               // texto corto al pie de la columna izquierda (ej. "2026", "SEP 2026", "08-09 · 2026")
- *        creditos:    ["DIRECCIÓN DE ARTE: MONTAÑA DEPT", "FOTOGRAFÍA: [ PENDIENTE ]"]  // una línea por ítem; vista CRÉDITOS
  *        card:        { src: "ruta.jpg", w: 1333, h: 2000 }    // imagen de la portada; si falta usa la primera foto
  *      `layout` ya no cambia la ficha: todas las series se ven como hoja de contacto (contraída) o imágenes grandes (expandida).
  * - anio y servicios vacíos se muestran como "—".
@@ -144,7 +144,6 @@ window.PROYECTOS = [
         slug: "septiembre",
         titulo: "Septiembre",
         fecha: "SEP 2026",
-        creditos: ["DIRECCIÓN DE ARTE: MONTAÑA DEPT", "FOTOGRAFÍA: [ PENDIENTE ]", "CLIENTE: FUKU"],
         bajada: "Sesión mensual de contenido · septiembre 2026.",
         card: { src: "assets/img/proyectos/fuku/sesiones/septiembre-01.jpg", w: 1000, h: 1500 },
         layout: "editorial",
@@ -170,7 +169,6 @@ window.PROYECTOS = [
         slug: "octubre",
         titulo: "Octubre",
         fecha: "OCT 2026",
-        creditos: ["DIRECCIÓN DE ARTE: MONTAÑA DEPT", "FOTOGRAFÍA: [ PENDIENTE ]", "CLIENTE: FUKU"],
         bajada: "Sesión mensual de contenido · octubre 2026.",
         card: { src: "assets/img/proyectos/fuku/sesiones/octubre-01.jpg", w: 1000, h: 1500 },
         layout: "editorial",
@@ -193,32 +191,29 @@ window.PROYECTOS = [
         slug: "reels",
         titulo: "Reels",
         fecha: "2026",
-        creditos: ["DIRECCIÓN DE ARTE: MONTAÑA DEPT", "VIDEO: [ PENDIENTE ]", "CLIENTE: FUKU"],
         bajada: "Reels y videos para redes sociales.",
         card: { src: "assets/img/proyectos/fuku/sesiones/reel-01-frame.jpg", w: 360, h: 640 },
         layout: "editorial",
         fotos: [
-          { src: "assets/img/proyectos/fuku/sesiones/reel-01.gif", w: 360, h: 640, caption: "Mes 1 · 10.06" },
-          { src: "assets/img/proyectos/fuku/sesiones/reel-02.gif", w: 360, h: 640, caption: "Día del padre · 21.06" },
-          { src: "assets/img/proyectos/fuku/sesiones/reel-03.gif", w: 360, h: 640, caption: "Entradas · 26.06" },
-          { src: "assets/img/proyectos/fuku/sesiones/reel-04.gif", w: 360, h: 640, caption: "Reels · 21.07 · Felices" },
-          { src: "assets/img/proyectos/fuku/sesiones/reel-05.gif", w: 360, h: 640, caption: "Reels · 21.07 · Horario" },
-          { src: "assets/img/proyectos/fuku/sesiones/reel-06.gif", w: 360, h: 640, caption: "Reels · 21.07 · Palillos" },
-          { src: "assets/img/proyectos/fuku/sesiones/reel-07.gif", w: 360, h: 640, caption: "Reels · 21.07 · Post it" },
+          { src: "assets/img/proyectos/fuku/sesiones/reel-01.mp4", poster: "assets/img/proyectos/fuku/sesiones/reel-01-poster.jpg", w: 720, h: 1280, video: true, caption: "Mes 1 · 10.06" },
+          { src: "assets/img/proyectos/fuku/sesiones/reel-02.mp4", poster: "assets/img/proyectos/fuku/sesiones/reel-02-poster.jpg", w: 720, h: 1280, video: true, caption: "Día del padre · 21.06" },
+          { src: "assets/img/proyectos/fuku/sesiones/reel-03.mp4", poster: "assets/img/proyectos/fuku/sesiones/reel-03-poster.jpg", w: 720, h: 1280, video: true, caption: "Entradas · 26.06" },
+          { src: "assets/img/proyectos/fuku/sesiones/reel-04.mp4", poster: "assets/img/proyectos/fuku/sesiones/reel-04-poster.jpg", w: 720, h: 1280, video: true, caption: "Reels · 21.07 · Felices" },
+          { src: "assets/img/proyectos/fuku/sesiones/reel-05.mp4", poster: "assets/img/proyectos/fuku/sesiones/reel-05-poster.jpg", w: 720, h: 1280, video: true, caption: "Reels · 21.07 · Horario" },
+          { src: "assets/img/proyectos/fuku/sesiones/reel-06.mp4", poster: "assets/img/proyectos/fuku/sesiones/reel-06-poster.jpg", w: 720, h: 1280, video: true, caption: "Reels · 21.07 · Palillos" },
+          { src: "assets/img/proyectos/fuku/sesiones/reel-07.mp4", poster: "assets/img/proyectos/fuku/sesiones/reel-07-poster.jpg", w: 720, h: 1280, video: true, caption: "Reels · 21.07 · Post it" },
           { src: "assets/img/proyectos/fuku/sesiones/reel-08.gif", w: 480, h: 270, caption: "Carrusel horario · 12.08" },
-          { src: "assets/img/proyectos/fuku/sesiones/reel-09.gif", w: 480, h: 270, caption: "Estreno Kim Chicken · 22.08" },
-          { src: "assets/img/proyectos/fuku/sesiones/reel-10.gif", w: 360, h: 640, caption: "Promo ramen · 27.08" },
-          { src: "assets/img/proyectos/fuku/sesiones/reel-11.gif", w: 360, h: 640, caption: "Septiembre · Delivery" },
-          { src: "assets/img/proyectos/fuku/sesiones/reel-12.gif", w: 480, h: 270, caption: "Porkbelly · 21.10" }
+          { src: "assets/img/proyectos/fuku/sesiones/reel-09.mp4", poster: "assets/img/proyectos/fuku/sesiones/reel-09-poster.jpg", w: 1280, h: 720, video: true, caption: "Estreno Kim Chicken · 22.08" },
+          { src: "assets/img/proyectos/fuku/sesiones/reel-10.mp4", poster: "assets/img/proyectos/fuku/sesiones/reel-10-poster.jpg", w: 720, h: 1280, video: true, caption: "Promo ramen · 27.08" },
+          { src: "assets/img/proyectos/fuku/sesiones/reel-11.mp4", poster: "assets/img/proyectos/fuku/sesiones/reel-11-poster.jpg", w: 720, h: 1280, video: true, caption: "Septiembre · Delivery" },
+          { src: "assets/img/proyectos/fuku/sesiones/reel-12.mp4", poster: "assets/img/proyectos/fuku/sesiones/reel-12-poster.jpg", w: 854, h: 480, video: true, caption: "Porkbelly · 21.10" }
         ]
       },
       {
         slug: "menu",
         titulo: "Menú",
         fecha: "2026",
-        creditos: ["DIRECCIÓN DE ARTE: MONTAÑA DEPT", "FOTOGRAFÍA: [ PENDIENTE ]", "CLIENTE: FUKU"],
         bajada: "Fotografía de producto.\nToda la carta en un mismo set.",
-        titular: "Dieciséis platos, un mismo mesón.",
         descripcion: "Fotografiamos la carta completa sobre el mesón de acero del local, con el mismo ángulo y la misma luz en cada plato. Así la carta se ve ordenada, reconocible y lista para usar en redes y en el menú.",
         datos: [
           { k: "Tipo", v: "Producto" },
@@ -324,7 +319,6 @@ window.PROYECTOS = [
         slug: "septiembre",
         titulo: "Septiembre",
         fecha: "SEP 2026",
-        creditos: ["DIRECCIÓN DE ARTE: MONTAÑA DEPT", "FOTOGRAFÍA: [ PENDIENTE ]", "CLIENTE: SHAWI"],
         bajada: "Sesión mensual de contenido · septiembre 2026.",
         card: { src: "assets/img/proyectos/shawi/sesiones/septiembre-01.jpg", w: 1125, h: 1500 },
         layout: "editorial",
@@ -369,7 +363,6 @@ window.PROYECTOS = [
         slug: "octubre",
         titulo: "Octubre",
         fecha: "OCT 2026",
-        creditos: ["DIRECCIÓN DE ARTE: MONTAÑA DEPT", "FOTOGRAFÍA: [ PENDIENTE ]", "CLIENTE: SHAWI"],
         bajada: "Sesión mensual de contenido · octubre 2026.",
         card: { src: "assets/img/proyectos/shawi/sesiones/octubre-01.jpg", w: 1125, h: 1500 },
         layout: "editorial",
@@ -395,7 +388,6 @@ window.PROYECTOS = [
         slug: "noviembre",
         titulo: "Noviembre",
         fecha: "NOV 2026",
-        creditos: ["DIRECCIÓN DE ARTE: MONTAÑA DEPT", "FOTOGRAFÍA: [ PENDIENTE ]", "CLIENTE: SHAWI"],
         bajada: "Sesión mensual de contenido · noviembre 2026.",
         card: { src: "assets/img/proyectos/shawi/sesiones/noviembre-01.jpg", w: 1125, h: 1500 },
         layout: "editorial",
@@ -475,7 +467,6 @@ window.PROYECTOS = [
         slug: "sesion",
         titulo: "Sesión",
         fecha: "2026",
-        creditos: ["DIRECCIÓN DE ARTE: MONTAÑA DEPT", "FOTOGRAFÍA: [ PENDIENTE ]", "CLIENTE: DOKEBI"],
         bajada: "Registro fotográfico.",
         card: { src: "assets/img/proyectos/dokebi/sesiones/sesion-01.jpg", w: 1000, h: 1500 },
         layout: "grilla",
@@ -519,24 +510,22 @@ window.PROYECTOS = [
         slug: "workshop-garuda",
         titulo: "Workshop x Garuda",
         fecha: "2026",
-        creditos: ["DIRECCIÓN DE ARTE: MONTAÑA DEPT", "FOTOGRAFÍA: [ PENDIENTE ]", "CLIENTE: CORTALAB"],
         bajada: "Registro audiovisual.",
         card: { src: "assets/img/proyectos/cortalab/portada.jpg", w: 844, h: 1500 },
         layout: "editorial",
         fotos: [
-          { src: "assets/img/proyectos/cortalab/sesiones/workshop-garuda.gif", w: 360, h: 640 }
+          { src: "assets/img/proyectos/cortalab/sesiones/workshop-garuda.mp4", poster: "assets/img/proyectos/cortalab/sesiones/workshop-garuda-poster.jpg", w: 480, h: 854, video: true }
         ]
       },
       {
         slug: "master",
         titulo: "Master",
         fecha: "2026",
-        creditos: ["DIRECCIÓN DE ARTE: MONTAÑA DEPT", "FOTOGRAFÍA: [ PENDIENTE ]", "CLIENTE: CORTALAB"],
         bajada: "Registro audiovisual.",
         card: { src: "assets/img/proyectos/cortalab/sesiones/master-frame.jpg", w: 844, h: 1500 },
         layout: "editorial",
         fotos: [
-          { src: "assets/img/proyectos/cortalab/sesiones/master.gif", w: 360, h: 640 }
+          { src: "assets/img/proyectos/cortalab/sesiones/master.mp4", poster: "assets/img/proyectos/cortalab/sesiones/master-poster.jpg", w: 540, h: 960, video: true }
         ]
       }
     ]
