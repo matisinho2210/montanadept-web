@@ -132,10 +132,10 @@ window.PROYECTOS = [
         layout: "carrusel",
         fotos: [
           { src: "assets/img/proyectos/fuku/diseno/carrusel-resenas-01.jpg", w: 1080, h: 1440 },
-          { src: "assets/img/proyectos/fuku/diseno/carrusel-resenas-02.jpg", w: 1500, h: 2000 },
           { src: "assets/img/proyectos/fuku/diseno/carrusel-resenas-03.gif", w: 480, h: 640 },
           { src: "assets/img/proyectos/fuku/diseno/carrusel-resenas-04.gif", w: 480, h: 640 },
-          { src: "assets/img/proyectos/fuku/diseno/carrusel-resenas-05.gif", w: 480, h: 640 }
+          { src: "assets/img/proyectos/fuku/diseno/carrusel-resenas-05.gif", w: 480, h: 640 },
+          { src: "assets/img/proyectos/fuku/diseno/carrusel-resenas-02.jpg", w: 1500, h: 2000 }
         ]
       }
     ],
