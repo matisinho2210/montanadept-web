@@ -6,6 +6,13 @@
   var body = doc.body;
   doc.documentElement.classList.add('js');
 
+  /* Salvaguarda: sin #ancla, toda página abre arriba (también en iframes y al volver con atrás/adelante) */
+  function toTop() { if (!location.hash) window.scrollTo(0, 0); }
+  if ('scrollRestoration' in history) { try { history.scrollRestoration = 'manual'; } catch (err) { /* sin control */ } }
+  toTop();
+  window.addEventListener('pageshow', function (e) { if (e.persisted || !location.hash) toTop(); });
+  window.addEventListener('load', function () { window.setTimeout(toTop, 0); });
+
   // Prefijo para rutas: las fichas (carpeta /proyectos) usan data-base="../"
   var base = body.getAttribute('data-base') || '';
   var PROYECTOS = Array.isArray(window.PROYECTOS) ? window.PROYECTOS : [];
@@ -82,7 +89,7 @@
       var t = (s.datos || []).filter(function (d) { return d && d.k === 'Tipo'; })[0];
       return t ? t.v : 'Sesión de fotos';
     };
-    var hashDe = function (s, si) { return tienePresentacion(s) ? serieAnchor(s, si) : ''; };
+    var hashDe = function (s, si) { return serieAnchor(s, si); };
     if (p.portada && !sinPortada) {
       add({ src: p.portada, w: p.portadaSize && p.portadaSize[0], h: p.portadaSize && p.portadaSize[1] }, 'Portada', listOrDash(p.categorias), '');
     }
@@ -344,92 +351,120 @@
     flush();
     return out;
   }
-  function serieBlock(p, serie, si) {
-    var fotos = (serie.fotos || []).filter(function (f) { return f && f.src; });
-    if (!fotos.length) return '';
-    var titulo = serie.titulo || ('Serie ' + pad(si + 1));
-    var grp = 'serie-' + si;
-    var hid = 'serie-h-' + si;
-    var cell = function (f, i, g) {
-      var alt = p.nombre + ' — ' + titulo + ', foto ' + (i + 1);
-      var cap = '<figcaption class="mono">(' + pad(i + 1) + ')</figcaption>';
-      return '<figure class="' + g + '">' + photoBtn('ph-ed', f, alt, grp, titulo, true) + cap + '</figure>';
-    };
-    var bodyHTML;
-    if (serie.layout === 'grilla') {
-      bodyHTML = '<ul class="sheet">' + fotos.map(function (f, i) {
-        var alt = p.nombre + ' — ' + titulo + ', foto ' + (i + 1);
-        return '<li><figure>' + photoBtn('ph-sheet', f, alt, grp, titulo, false) +
-          '<figcaption class="mono">(' + pad(i + 1) + ')</figcaption></figure></li>';
-      }).join('') + '</ul>';
-    } else {
-      bodyHTML = editorialRows(fotos, cell);
-    }
-    var conteo = ' — ' + plural(fotos.length, 'foto', 'fotos');
-    if (!tienePresentacion(serie)) {
-      return '<div class="serie" data-rv><div class="serie-head mono"><h3 id="' + hid + '">[ ' + pad(si + 1) + ' ] ' +
-        esc(titulo) + conteo + '</h3></div>' + bodyHTML + '</div>';
-    }
-    var datos = Array.isArray(serie.datos) ? serie.datos.filter(function (d) { return d && d.k; }) : [];
-    var hero = serie.hero && serie.hero.src ? serie.hero : null;
-    var et = Array.isArray(serie.etiquetas) ? serie.etiquetas : [];
-    var heroHTML = '';
-    if (hero) {
-      var hw = Number(hero.w), hh = Number(hero.h), hdims = isFinite(hw) && isFinite(hh) && hw > 0 && hh > 0;
-      heroHTML = '<div class="ses-hero-wrap"><button type="button" class="lb-open ses-hero" data-lb="' + esc(grp) + '" data-lb-hero="1" data-lb-title="' + esc(titulo) + '"' +
-        ' aria-label="' + esc('Ampliar: ' + p.nombre + ' — ' + titulo + ', imagen destacada') + '">' +
-        '<img src="' + esc(asset(hero.src)) + '" alt="' + esc(p.nombre + ' — ' + titulo + ', imagen destacada') + '"' +
-        (hdims ? ' width="' + hw + '" height="' + hh + '"' : '') + (hero.pos ? ' data-pos="' + esc(hero.pos) + '"' : '') +
-        ' loading="lazy" decoding="async">' +
-        (et[0] ? '<span class="ses-tag ses-tag--l mono" aria-hidden="true">' + esc(et[0]) + '</span>' : '') +
-        (et[1] ? '<span class="ses-tag ses-tag--r mono" aria-hidden="true">' + esc(et[1]) + '</span>' : '') +
-        '</button></div>';
-    }
-    return '<div class="serie serie--ses" id="' + esc(serieAnchor(serie, si)) + '" data-rv>' +
-      '<div class="ses-info">' +
-        '<div class="ses-id"><h3 class="mono" id="' + hid + '">[ ' + pad(si + 1) + ' ] ' + esc(titulo) + conteo + '</h3>' +
-          (serie.bajada ? '<p class="ses-bajada">' + esc(serie.bajada) + '</p>' : '') + '</div>' +
-        '<div class="ses-txt">' +
-          (serie.titular ? '<p class="ses-titular">' + esc(serie.titular) + '</p>' : '') +
-          (serie.descripcion ? '<p class="ses-desc">' + esc(serie.descripcion) + '</p>' : '') +
-          (datos.length ? '<dl class="ses-datos">' + datos.map(function (d) {
-            return '<div><dt class="mono">' + esc(d.k) + '</dt><dd>' + esc(d.v) + '</dd></div>';
-          }).join('') + '</dl>' : '') +
-        '</div>' +
-      '</div>' + heroHTML + bodyHTML + '</div>';
-  }
-  function tienePresentacion(serie) { return !!(serie && (serie.titular || serie.descripcion)); }
   function serieAnchor(serie, si) {
     var s = String(serie.slug || '').toLowerCase().replace(/[^a-z0-9_-]+/g, '-').replace(/^-+|-+$/g, '');
     return 'sesion-' + (s || 'serie-' + (si + 1));
   }
-  // Índice de tarjetas: una por serie con presentación (alturas alternadas: impares 3:4, pares 1:1)
-  function seriesIndex(p) {
+  function serieFotos(s) { return (s.fotos || []).filter(function (f) { return f && f.src; }); }
+  function serieTipo(s) {
+    var t = (s.datos || []).filter(function (d) { return d && d.k === 'Tipo' && d.v; })[0];
+    return t ? t.v : 'Sesión';
+  }
+  // Portadas (ref. A): título grande + texto + botón; tarjetas en 4 columnas con alturas alternadas (impares 3:4, pares 1:1)
+  function seriesCovers(p) {
     var cards = [];
     p.series.forEach(function (s, si) {
-      var fotos = (s.fotos || []).filter(function (f) { return f && f.src; });
-      if (!fotos.length || !tienePresentacion(s)) return;
+      var fotos = serieFotos(s);
+      if (!fotos.length) return;
       var img = s.card && s.card.src ? s.card : fotos[0];
       var w = Number(img.w), h = Number(img.h), dims = isFinite(w) && isFinite(h) && w > 0 && h > 0;
       var titulo = s.titulo || ('Serie ' + pad(si + 1));
-      var linea = s.bajada ? String(s.bajada).split('\n')[0] : '';
+      var desc = String(s.bajada || s.descripcion || '').replace(/\s*\n\s*/g, ' ').trim();
       var k = cards.length;
-      cards.push('<li class="ses-card ' + (k % 2 === 0 ? 'ses-card--tall' : 'ses-card--sq') + '"><a href="#' + esc(serieAnchor(s, si)) + '" data-ses-link>' +
+      cards.push('<li class="ses-card ' + (k % 2 === 0 ? 'ses-card--tall' : 'ses-card--sq') + '">' +
         '<span class="ses-card-img"><img src="' + esc(asset(img.src)) + '" alt=""' + (dims ? ' width="' + w + '" height="' + h + '"' : '') + ' loading="lazy" decoding="async"></span>' +
-        '<span class="ses-card-t">' + esc(titulo) + '</span>' +
-        (linea ? '<span class="ses-card-d">' + esc(linea) + '</span>' : '') +
-        '<span class="ses-card-l mono">Ver sesión <span aria-hidden="true">↓</span></span></a></li>');
+        '<h4 class="ses-card-t">' + esc(titulo) + '</h4>' +
+        (desc ? '<p class="ses-card-d">' + esc(desc) + '</p>' : '') +
+        '<a class="ses-card-l mono" href="#' + esc(serieAnchor(s, si)) + '" data-ses-link>Ver sesión <span aria-hidden="true">↗</span>' +
+        '<span class="sr-only">: ' + esc(titulo) + '</span></a></li>');
     });
     if (!cards.length) return '';
     return '<div class="ses-head">' +
-        '<h3 class="ses-h">Sesiones</h3>' +
-        '<p class="ses-lead">Cada sesión parte de una idea simple: mostrar el producto como se vive en el local. Aquí va el detalle de cada una.</p>' +
-      '</div><ul class="ses-index">' + cards.join('') + '</ul>';
+        '<p class="ses-h" aria-hidden="true">Sesiones</p><h3 class="sr-only">Portadas de las sesiones</h3>' +
+        '<p class="ses-lead">' + esc(String(p.sesionesIntro || '').trim() || 'Cada sesión parte de una idea simple y la desarrollamos en fotos.') + '</p>' +
+        '<a class="ses-all mono" href="#sesiones-indice" data-ses-link>Ver todas <span aria-hidden="true">↓</span></a>' +
+      '</div><ul class="ses-covers">' + cards.join('') + '</ul>';
+  }
+  // Índice por carpetas (ref. B): una fila por serie; hoja de contacto, imágenes grandes o créditos
+  function seriesFolders(p) {
+    var rows = [];
+    p.series.forEach(function (s, si) {
+      var fotos = serieFotos(s);
+      if (!fotos.length) return;
+      var titulo = s.titulo || ('Serie ' + pad(si + 1));
+      var grp = 'serie-' + si;
+      var id = serieAnchor(s, si);
+      var open = rows.length === 0;
+      var meta = String(p.cliente || p.nombre).toLocaleUpperCase('es') + ' | ' + String(serieTipo(s)).toLocaleUpperCase('es');
+      var figs = fotos.map(function (f, i) {
+        var w = Number(f.w), h = Number(f.h), dims = isFinite(w) && isFinite(h) && w > 0 && h > 0;
+        var alt = p.nombre + ' — ' + titulo + ', foto ' + (i + 1);
+        return '<li class="ses-fig"><figure><div class="ses-ph"' + (dims ? ' data-ar="' + w + '/' + h + '"' : '') + '>' +
+          photoBtn('ses-ph-btn', f, alt, grp, titulo, false) + '</div>' +
+          '<figcaption class="mono">(' + pad(i + 1) + ')</figcaption></figure></li>';
+      }).join('');
+      var cred = (Array.isArray(s.creditos) ? s.creditos : []).map(function (c) { return '<li>' + esc(c) + '</li>'; }).join('');
+      var credHTML = (cred ? '<ul class="ses-cred mono">' + cred + '</ul>' : '') +
+        (s.titular ? '<p class="ses-titular">' + esc(s.titular) + '</p>' : '') +
+        (s.descripcion ? '<p class="ses-desc">' + esc(s.descripcion) + '</p>' : '');
+      rows.push('<li class="ses-row' + (open ? ' is-open' : '') + '" id="' + esc(id) + '" data-view="img">' +
+        '<div class="ses-side">' +
+          '<h4 class="ses-name mono" tabindex="-1"><span>' + esc(titulo) + '</span></h4>' +
+          '<p class="ses-meta mono">' + esc(meta) + '</p>' +
+          '<button type="button" class="ses-plus mono" aria-expanded="' + (open ? 'true' : 'false') + '" aria-controls="' + esc(id) + '-pics" data-ses-plus>' +
+            '<span aria-hidden="true" class="ses-plus-g">' + (open ? '−' : '+') + '</span><span class="sr-only">' + esc('Expandir sesión: ' + titulo) + '</span></button>' +
+          '<div class="ses-foot mono">' +
+            '<span class="ses-year">' + esc(s.fecha || '') + '</span>' +
+            '<span class="ses-tog" role="group" aria-label="' + esc('Vista de ' + titulo) + '">' +
+              '<button type="button" data-ses-view="img" aria-pressed="true">IMÁGENES</button>' +
+              '<span aria-hidden="true"> / </span>' +
+              '<button type="button" data-ses-view="cred" aria-pressed="false">CRÉDITOS</button></span>' +
+          '</div>' +
+        '</div>' +
+        '<div class="ses-main" id="' + esc(id) + '-pics">' +
+          '<ul class="ses-pics">' + figs + '</ul>' +
+          '<div class="ses-credits" hidden>' + (credHTML || '<p class="ses-desc mono">Créditos pendientes.</p>') + '</div>' +
+        '</div></li>');
+    });
+    if (!rows.length) return '';
+    return '<ol class="ses-folders" id="sesiones-indice">' + rows.join('') + '</ol>';
+  }
+  function sesSetView(row, view) {
+    row.setAttribute('data-view', view);
+    Array.prototype.forEach.call(row.querySelectorAll('[data-ses-view]'), function (b) {
+      b.setAttribute('aria-pressed', b.getAttribute('data-ses-view') === view ? 'true' : 'false');
+    });
+    row.querySelector('.ses-pics').hidden = view !== 'img';
+    row.querySelector('.ses-credits').hidden = view !== 'cred';
+    sesAnimate(row);
+  }
+  function sesSetOpen(row, open) {
+    row.classList.toggle('is-open', open);
+    var b = row.querySelector('[data-ses-plus]');
+    b.setAttribute('aria-expanded', open ? 'true' : 'false');
+    b.querySelector('.ses-plus-g').textContent = open ? '−' : '+';
+    sesAnimate(row);
+  }
+  // Con #sesion-<slug> en la URL: expande esa fila y baja hasta ella
+  function sesFromHash(root) {
+    var id = decodeURIComponent((location.hash || '').slice(1));
+    if (!id || id.indexOf('sesion-') !== 0) return;
+    var row = null;
+    Array.prototype.forEach.call(root.querySelectorAll('.ses-row'), function (r) { if (r.id === id) row = r; });
+    if (!row) return;
+    sesSetOpen(row, true);
+    sesSetView(row, 'img');
+    row.scrollIntoView({ behavior: 'auto', block: 'start' });
+  }
+  function sesAnimate(row) {
+    if (!motionOK()) return;
+    var m = row.querySelector('.ses-main');
+    m.classList.remove('is-anim');
+    void m.offsetWidth;
+    m.classList.add('is-anim');
   }
   function seriesGallery(p, id) {
-    var count = (p.series || []).reduce(function (a, s) {
-      return a + (s.fotos || []).filter(function (f) { return f && f.src; }).length;
-    }, 0);
+    var count = (p.series || []).reduce(function (a, s) { return a + serieFotos(s).length; }, 0);
     var vids = (p.videos || []).map(function (v, i) {
       return { forceFull: true, html: function () { return videoBlock(v, p.nombre + ', video ' + (i + 1)); } };
     });
@@ -437,8 +472,7 @@
     if (!count) return '';
     return '<section class="gal" aria-labelledby="' + id + '">' +
       '<div class="gal-label mono"><h2 id="' + id + '">Sesiones — ' + plural(count, 'pieza', 'piezas') + '</h2><span aria-hidden="true">[ ↓ ]</span></div>' +
-      seriesIndex(p) +
-      p.series.map(function (s, si) { return serieBlock(p, s, si); }).join('') +
+      seriesCovers(p) + seriesFolders(p) +
       (vids.length ? '<div data-rv>' + galleryRows(vids) + '</div>' : '') + '</section>';
   }
   /* ---------- diseño agrupado (manual, menú, carruseles) ---------- */
@@ -555,7 +589,7 @@
         if (b.disabled === d) return;
         if (d && doc.activeElement === b) {
           var other = b === prevB ? nextB : prevB;
-          if (!other.disabled) other.focus(); else car.focus();
+          if (!other.disabled) other.focus({ preventScroll: true }); else car.focus({ preventScroll: true });
         }
         b.disabled = d;
       };
@@ -677,9 +711,6 @@
     Array.prototype.forEach.call(scope.querySelectorAll('[data-ar]'), function (el) {
       el.style.aspectRatio = el.getAttribute('data-ar');
     });
-    Array.prototype.forEach.call(scope.querySelectorAll('[data-pos]'), function (el) {
-      el.style.objectPosition = el.getAttribute('data-pos');
-    });
   }
 
   var slug = body.getAttribute('data-proyecto');
@@ -777,6 +808,8 @@
         '</section>' + rest;
       applyAspect(root);
       initCarousels(root);
+      sesFromHash(root);
+      toTop();
     }
   }
 
@@ -840,17 +873,12 @@
   function lbOpen(btn) {
     var grp = btn.getAttribute('data-lb');
     var all = Array.prototype.slice.call(doc.querySelectorAll('.lb-open[data-lb="' + grp + '"]'));
-    var btns = all.filter(function (b) { return !b.hasAttribute('data-lb-hero'); }); // el hero no es un ítem aparte
-    if (!btns.length) btns = all;
+    var btns = all;
     lbState.items = btns.map(function (b) {
       var im = b.querySelector('img');
       return { src: im.getAttribute('src'), alt: im.getAttribute('alt') || '', title: b.getAttribute('data-lb-title') || '', btn: b };
     });
     var start = btns.indexOf(btn);
-    if (start < 0) { // el hero abre el visor en la foto que coincide con su imagen (o en la primera)
-      var hsrc = btn.querySelector('img').getAttribute('src');
-      start = btns.findIndex(function (b) { return b.querySelector('img').getAttribute('src') === hsrc; });
-    }
     lbState.i = Math.max(0, start);
     lbState.opener = btn;
     if (!lb) lb = buildLightbox();
@@ -879,10 +907,26 @@
     var t = doc.getElementById((a.getAttribute('href') || '').slice(1));
     if (!t) return;
     e.preventDefault();
+    if (t.classList.contains('ses-row')) { sesSetOpen(t, true); sesSetView(t, 'img'); }
     t.scrollIntoView({ behavior: motionOK() ? 'smooth' : 'auto', block: 'start' });
     if (history.replaceState) history.replaceState(null, '', a.getAttribute('href'));
-    var h = t.querySelector('h3');
-    if (h) { h.setAttribute('tabindex', '-1'); h.focus({ preventScroll: true }); }
+    var h = t.querySelector('.ses-name');
+    if (h) h.focus({ preventScroll: true });
+  });
+  doc.addEventListener('click', function (e) {
+    var tg = e.target.closest ? e.target.closest('[data-ses-plus], [data-ses-view]') : null;
+    if (!tg) return;
+    var row = tg.closest('.ses-row');
+    if (!row) return;
+    if (tg.hasAttribute('data-ses-plus')) {
+      var open = !row.classList.contains('is-open');
+      sesSetOpen(row, open);
+      if (open && row.getAttribute('data-view') !== 'img') sesSetView(row, 'img');
+    } else {
+      var v = tg.getAttribute('data-ses-view');
+      if (v === 'cred' && !row.classList.contains('is-open')) sesSetOpen(row, true);
+      sesSetView(row, v);
+    }
   });
   doc.addEventListener('keydown', function (e) {
     if (!lb || lb.hidden) return;
@@ -929,16 +973,20 @@
     });
   }
 
-  /* ---------- reloj de Santiago ---------- */
+  /* ---------- reloj y fecha de Santiago ---------- */
   var reloj = doc.getElementById('reloj');
-  if (reloj) {
+  var fechaEl = doc.getElementById('fecha');
+  if (reloj || fechaEl) {
     var fmt = null;
+    var fmtF = null;
     try {
       fmt = new Intl.DateTimeFormat('es-CL', { timeZone: 'America/Santiago', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' });
-    } catch (err) { fmt = null; }
+      fmtF = new Intl.DateTimeFormat('es-CL', { timeZone: 'America/Santiago', day: '2-digit', month: '2-digit', year: 'numeric' });
+    } catch (err) { fmt = null; fmtF = null; }
     var tick = function () {
-      if (!fmt) return;
-      reloj.textContent = 'SCL ' + fmt.format(new Date()).replace(/\s/g, '');
+      var now = new Date();
+      if (reloj && fmt) reloj.textContent = 'SCL ' + fmt.format(now).replace(/\s/g, '');
+      if (fechaEl && fmtF) fechaEl.textContent = fmtF.format(now).replace(/\s/g, '').replace(/[-.]/g, '/');
     };
     tick();
     window.setInterval(tick, 30000);
