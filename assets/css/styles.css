@@ -417,8 +417,6 @@ a.pt-img:focus-visible { outline-offset: -3px; }
 .site-footer .mono, .site-footer .mono a { color: var(--accent); }
 .site-footer :focus-visible { outline-color: var(--accent); }
 .footer-in { padding-block: 72px 0; row-gap: 40px; align-items: start; }
-.footer-brand { grid-column: 1 / -1; line-height: 0; }
-.footer-brand img { width: 96px; height: auto; }
 .fcol { grid-column: span 6; }
 .fcol h2 { font: 400 11px/1.5 var(--f-mono); letter-spacing: 0.04em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
 .fcol ul { display: grid; gap: 4px; font: 400 12px/1.5 var(--f-mono); letter-spacing: 0.04em; text-transform: uppercase; color: var(--accent); }
@@ -426,12 +424,17 @@ a.pt-img:focus-visible { outline-offset: -3px; }
 .fcol a:hover { text-decoration: underline; text-underline-offset: 3px; }
 .fcol-contact { grid-column: 1 / -1; }
 .fcol-contact li:first-child a { text-transform: none; }
-.footer-bottom { margin-top: 72px; padding-block: 20px 28px; border-top: 1px solid rgba(255, 255, 255, 0.16); margin-inline: var(--m); padding-inline: 0; display: flex; justify-content: space-between; color: var(--gray); }
-.footer-bottom span { color: var(--gray); }
+.footer-bottom { margin-top: 96px; padding-block: 0 28px; row-gap: 24px; align-items: end; }
+.footer-brand { grid-column: 1 / -1; justify-self: start; line-height: 0; }
+.footer-brand img { width: clamp(220px, 40vw, 640px); height: auto; }
+.footer-legal { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 4px 24px; }
+.footer-legal span { color: var(--gray); }
 @media (min-width: 900px) {
-  .footer-brand { grid-column: 1 / 5; }
-  .fcol-nav { grid-column: 6 / 8; } .fcol-contact { grid-column: 8 / 11; } .fcol-geo { grid-column: 11 / 13; }
+  .fcol-contact { grid-column: 1 / 5; } .fcol-nav { grid-column: 9 / 11; } .fcol-geo { grid-column: 11 / 13; }
   .footer-in { padding-block: 96px 0; }
+  .footer-bottom { margin-top: 160px; }
+  .footer-brand { grid-column: 1 / 8; }
+  .footer-legal { grid-column: 8 / 13; justify-content: flex-end; }
 }
 
 /* mayúsculas según Figma */
