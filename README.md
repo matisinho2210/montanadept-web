@@ -44,17 +44,15 @@ series: [
 videos: []
 ```
 
-Cada serie admite campos opcionales para presentar la sesión (si faltan `titular` y `descripcion`, se muestra como antes):
+Cada serie admite campos opcionales para presentar la sesión:
 
 ```js
 { slug: "sandwich",                       // ancla #sesion-sandwich (la usa el índice de tarjetas)
   titulo: "Sándwich",
   bajada: "Fotografía lifestyle.\nDe la plancha a la mano.",  // 2 líneas; la 1ª sale en la tarjeta del índice
-  titular: "Frase grande de la sesión.",
-  descripcion: "Párrafo que cuenta qué fue y en qué consistió.",
+  descripcion: "Respaldo de bajada si esta falta.",
   datos: [ { k: "Tipo", v: "Lifestyle" }, { k: "Piezas", v: "05 fotos" } ],   // mini tabla
   fecha: "2026",                                                              // pie de la columna izquierda del índice (opcional)
-  creditos: ["DIRECCIÓN DE ARTE: MONTAÑA DEPT", "FOTOGRAFÍA: [ PENDIENTE ]"], // vista CRÉDITOS (opcional)
   card: { src: "assets/img/.../foto.jpg", w: 1333, h: 2000 },                 // imagen de la tarjeta; si falta, la 1ª foto
   layout: "editorial", fotos: [ ... ] }
 ```
@@ -64,6 +62,7 @@ Opcional por proyecto: `sesionesIntro: "texto"` (párrafo gris de la sección Se
 La sección "Sesiones" muestra un título, un párrafo gris, un índice de tarjetas (una por serie, con link "Ver sesión ↓")
 y luego el bloque de cada serie seguido de su galería.
 
+- Un video en una sesión se declara como `{ src: "…/reel-01.mp4", poster: "…/reel-01-poster.jpg", w: 720, h: 1280, video: true }` (MP4 H.264, menos de 3,4 MB, `w`/`h` = medidas reales del MP4). En la hoja de contacto y las tarjetas sale el póster con un "▶"; al expandir la sesión y en el visor es un `<video>` con controles (sin autoplay si el sistema pide reducir movimiento). Los carruseles usan GIF.
 - `w` y `h` son las medidas reales de la foto en píxeles (se usan para mantener la proporción sin recortar).
 - `layout: "editorial"`: retícula asimétrica sin recorte, pensada para fotos verticales (de a dos; si sobra una, va centrada).
 - `layout: "grilla"`: hoja de contacto de 3 columnas en escritorio, 2 en tablet y 1 en móvil, proporción 3:2.
