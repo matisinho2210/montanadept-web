@@ -167,7 +167,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 /* ---------- cabecera de página con número fantasma ---------- */
 .page-head { position: relative; padding-block: clamp(56px, 8vw, 120px) clamp(40px, 6vw, 80px); align-items: end; row-gap: 0; }
 .page-label { grid-column: 1 / -1; margin-bottom: clamp(24px, 4vw, 56px); }
-.page-title { grid-column: 1 / -1; grid-row: 2; position: relative; z-index: 1; font-size: clamp(3.75rem, 17vw, 17rem); }
+.page-title { grid-column: 1 / -1; grid-row: 2; position: relative; z-index: 1; font-size: clamp(2.5rem, 15.5vw, 17rem); }
 .ghost {
   grid-column: 1 / -1; grid-row: 2; justify-self: end; position: relative;
   font-family: var(--f-display); font-weight: 600; font-size: clamp(9rem, 38vw, 34rem);
@@ -218,30 +218,13 @@ a.pt-img:focus-visible { outline-offset: -3px; }
 }
 @media (min-width: 1080px) { .pthumbs { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
 
-/* ---------- proyectos: filtros y vistas ---------- */
-.pf { padding-block: 8px 36px; row-gap: 16px; align-items: start; }
-.pf-grp { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 20px; }
-.pf-label { flex: none; min-width: 72px; padding-top: 4px; }
-.pf-list { display: flex; flex-wrap: wrap; gap: 0 18px; }
-.filter, .vbtn { font: 400 14px/20px var(--f-text); color: var(--gray-text); padding: 4px 0; text-align: left; }
-.filter:hover, .vbtn:hover { color: var(--ink); }
-.filter[aria-pressed="true"], .vbtn[aria-pressed="true"] { color: var(--ink); font-weight: 500; }
-.pf-status { grid-column: 1 / -1; }
-.pf-tira { display: none; }
+/* ---------- proyectos: vistas ---------- */
 .pv-lista { padding-bottom: 8px; }
 .pgrid2 { display: grid; grid-template-columns: 1fr; gap: 2px; }
 .ptile { position: relative; display: block; text-decoration: none; }
 .ptile .frame { transition: opacity .3s; }
 @media (min-width: 600px) { .pgrid2 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (min-width: 1080px) {
-  .pf { padding-block: 16px 56px; row-gap: 12px; }
-  .pf-serv, .pf-vista { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); column-gap: var(--g); }
-  .pf-serv { grid-column: 1 / 7; } .pf-vista { grid-column: 7 / 13; }
-  .pf-serv .pf-label { grid-column: 1 / 2; } .pf-serv .pf-list { grid-column: 2 / 5; }
-  .pf-vista .pf-label { grid-column: 3 / 4; } .pf-vista .pf-list { grid-column: 4 / 7; }
-  .pf-list { flex-direction: column; gap: 2px; }
-  .pf-tira { display: block; }
-  .pf-status { grid-row: 2; grid-column: 2 / 7; margin-top: 16px; }
   .pgrid2 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
 
@@ -444,7 +427,7 @@ a.pt-img:focus-visible { outline-offset: -3px; }
 @media (min-width: 1080px) { .page-head--plain .page-title.page-title--long { font-size: clamp(3rem, 6.3vw, 7.75rem); } }
 
 /* mayúsculas según Figma */
-.nav-list a, .page-title, .filter, .srow-name, .fx-title, .ses-h { text-transform: uppercase; }
+.nav-list a, .page-title, .srow-name, .fx-title, .ses-h { text-transform: uppercase; }
 
 /* ---------- movimiento reducido ---------- */
 @media (prefers-reduced-motion: reduce) {
