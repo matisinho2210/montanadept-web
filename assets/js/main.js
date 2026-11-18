@@ -444,7 +444,7 @@
       var titulo = s.titulo || ('Serie ' + pad(si + 1));
       var grp = 'serie-' + si;
       var id = serieAnchor(s, si);
-      var open = rows.length === 0;
+      var open = false;
       var meta = String(p.cliente || p.nombre).toLocaleUpperCase('es') + ' | ' + String(serieTipo(s)).toLocaleUpperCase('es');
       var figs = fotos.map(function (f, i) {
         var w = Number(f.w), h = Number(f.h), dims = isFinite(w) && isFinite(h) && w > 0 && h > 0;
@@ -457,8 +457,6 @@
         '<div class="ses-side">' +
           '<h4 class="ses-name mono" tabindex="-1"><span>' + esc(titulo) + '</span></h4>' +
           '<p class="ses-meta mono">' + esc(meta) + '</p>' +
-          '<button type="button" class="ses-plus mono" aria-expanded="' + (open ? 'true' : 'false') + '" aria-controls="' + esc(id) + '-pics" data-ses-plus>' +
-            '<span aria-hidden="true" class="ses-plus-g">' + (open ? '−' : '+') + '</span><span class="sr-only">' + esc('Expandir sesión: ' + titulo) + '</span></button>' +
           '<div class="ses-foot mono">' +
             '<span class="ses-year">' + esc(s.fecha || '') + '</span>' +
           '</div>' +
@@ -471,6 +469,7 @@
     return '<ol class="ses-folders" id="sesiones-indice">' + rows.join('') + '</ol>';
   }
   function sesSetOpen(row, open) {
+    if (!row.querySelector('[data-ses-plus]')) return; // sesiones siempre minimizadas
     row.classList.toggle('is-open', open);
     var b = row.querySelector('[data-ses-plus]');
     b.setAttribute('aria-expanded', open ? 'true' : 'false');
