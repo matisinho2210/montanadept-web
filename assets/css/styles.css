@@ -685,3 +685,12 @@ body.is-home-dark { background: var(--night); color: #f3f3f1; }
 .hm-item { animation: hm-in .7s cubic-bezier(.2, .7, .2, 1) both; }
 .hm-item:nth-child(2) { animation-delay: .08s; } .hm-item:nth-child(3) { animation-delay: .16s; }
 .hm-item:nth-child(4) { animation-delay: .24s; } .hm-item:nth-child(5) { animation-delay: .32s; }
+
+/* inicio: h1 seo */
+.hm-h1 {
+  position: absolute; justify-self: center; align-self: start;
+  max-width: calc(100% - 2 * var(--m)); margin: -21px 0 0;
+  font-family: var(--f-mono); font-size: 12px; font-weight: 400; line-height: 1.5;
+  letter-spacing: 0.08em; text-transform: uppercase; text-align: center;
+  opacity: 0.6; color: inherit;
+}
