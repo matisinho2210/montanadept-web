@@ -225,6 +225,13 @@ a.pt-img:focus-visible { outline-offset: -3px; }
 
 /* ---------- proyectos: vistas ---------- */
 .pv-lista { padding-bottom: 8px; }
+.pf { padding-block: 8px 20px; }
+.pf-grp { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 20px; }
+.pf-label { flex: none; padding-top: 4px; }
+.pf-list { display: flex; flex-wrap: wrap; gap: 0 18px; }
+.vbtn { font: 400 14px/20px var(--f-text); color: var(--gray-text); padding: 4px 0; text-align: left; }
+.vbtn:hover { color: var(--ink); }
+.vbtn[aria-pressed="true"] { color: var(--ink); font-weight: 500; }
 .pgrid2 { display: grid; grid-template-columns: 1fr; gap: 2px; }
 .ptile { position: relative; display: block; text-decoration: none; }
 .ptile .frame { transition: opacity .3s; }
