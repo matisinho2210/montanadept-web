@@ -61,13 +61,13 @@
   <!-- Envío por Web3Forms: la access key va en assets/js/main.js (WEB3FORMS_KEY). -->
   <form class="form" data-form>
     <input type="checkbox" name="botcheck" class="sr-only" tabindex="-1" autocomplete="off" aria-hidden="true">
-    <div class="field"><label class="mono" for="f-nombre">[ 01 ] Nombre</label><input id="f-nombre" name="nombre" type="text" autocomplete="name" required></div>
-    <div class="field"><label class="mono" for="f-correo">[ 02 ] Correo</label><input id="f-correo" name="correo" type="email" autocomplete="email" required></div>
-    <div class="field"><label class="mono" for="f-empresa">[ 03 ] Empresa o marca</label><input id="f-empresa" name="empresa" type="text" autocomplete="organization"></div>
+    <div class="field"><label class="mono" for="f-nombre">[ 01 ] Nombre</label><div class="field__control"><input id="f-nombre" name="nombre" type="text" autocomplete="name" required></div></div>
+    <div class="field"><label class="mono" for="f-correo">[ 02 ] Correo</label><div class="field__control"><input id="f-correo" name="correo" type="email" autocomplete="email" required></div></div>
+    <div class="field"><label class="mono" for="f-empresa">[ 03 ] Empresa o marca</label><div class="field__control"><input id="f-empresa" name="empresa" type="text" autocomplete="organization"></div></div>
     <div class="field field--select"><label class="mono" for="f-necesidad">[ 04 ] Qué necesitas</label>
-      <select id="f-necesidad" name="necesidad" required><option value="" selected disabled>Elige una opción</option><option value="Branding">Branding</option><option value="Redes sociales">Redes sociales</option><option value="Publicidad">Publicidad</option><option value="Audiovisual">Audiovisual</option><option value="Otro">Otro</option></select></div>
-    <div class="field"><label class="mono" for="f-mensaje">[ 05 ] Mensaje</label><textarea id="f-mensaje" name="mensaje" rows="3" required></textarea></div>
-    <div><button class="send" type="submit">Enviar <span aria-hidden="true">→</span></button></div>
+      <div class="field__control"><select id="f-necesidad" name="necesidad" required><option value="" selected disabled>Elige una opción</option><option value="Branding">Branding</option><option value="Redes sociales">Redes sociales</option><option value="Publicidad">Publicidad</option><option value="Audiovisual">Audiovisual</option><option value="Otro">Otro</option></select></div></div>
+    <div class="field"><label class="mono" for="f-mensaje">[ 05 ] Mensaje</label><div class="field__control"><textarea id="f-mensaje" name="mensaje" rows="3" required></textarea></div></div>
+    <div><button class="send send-badge" type="submit" data-state="idle"><span class="send-badge__content">Enviar <span aria-hidden="true">→</span></span></button></div>
     <div class="form-ready" id="form-ready" role="status" aria-live="polite" hidden>
       <p class="form-ready-title mono" id="form-ready-title">Tu mensaje está listo.</p>
       <div class="form-ready-actions" id="form-ready-actions">
