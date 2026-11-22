@@ -321,14 +321,52 @@ a.pt-img:focus-visible { outline-offset: -3px; }
   border-bottom: 1px solid var(--ink); border-radius: 0; padding: 8px 0 12px; width: 100%;
   appearance: none; -webkit-appearance: none; resize: vertical;
 }
-.field input:focus-visible, .field select:focus-visible, .field textarea:focus-visible { outline: 0; border-bottom-width: 2px; padding-bottom: 11px; }
+.field input:focus-visible, .field select:focus-visible, .field textarea:focus-visible { outline: 0; }
+.field__control { position: relative; }
+.field__control input, .field__control textarea { display: block; padding-right: 28px; }
+/* campos multiestado: idle / focus / valid / error (data-state en .field) */
+.field__control::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: var(--ink); transform: scaleX(0); transform-origin: left center; transition: transform .35s cubic-bezier(.22, 1, .36, 1), background-color .2s; pointer-events: none; }
+.field[data-state="focus"] .field__control::after, .field[data-state="valid"] .field__control::after, .field[data-state="error"] .field__control::after { transform: scaleX(1); }
+.field[data-state="error"] .field__control::after { background: #d92d20; }
+.field__control:has(:focus-visible)::after { transform: scaleX(1); }
+.field.is-instant .field__control::after { transition: none; }
+.field__icon { position: absolute; top: 13px; right: 0; width: 16px; height: 16px; display: block; pointer-events: none; }
+.field__icon svg { width: 16px; height: 16px; display: block; }
+.field__icon--valid { color: var(--ink); }
+.field__icon--error { color: #d92d20; }
+.field--select .field__icon { right: 28px; }
+.field__icon .draw { stroke-dasharray: 24; stroke-dashoffset: 24; animation: send-draw .4s .12s ease-out forwards; }
+.field__msg { margin: 0; font: 400 13px/1.3 var(--f-text); color: #d92d20; }
+.field__msg:empty { height: 0; margin-top: -6px; overflow: hidden; }
+@media (prefers-reduced-motion: reduce) {
+  .field__control::after { transition: none; }
+  .field__icon .draw { animation: none; stroke-dashoffset: 0; }
+}
 .field select:invalid { color: var(--gray-text); }
-.field--select::after { content: "↓"; position: absolute; right: 2px; bottom: 12px; pointer-events: none; font-size: 16px; }
+.field--select .field__control::before { content: "↓"; position: absolute; right: 2px; bottom: 12px; pointer-events: none; font-size: 16px; }
 .send { background: var(--ink); color: var(--paper); font: 500 15px/1 var(--f-text); padding: 18px 32px; border: 1px solid var(--ink); border-radius: 0; transition: background-color .2s, color .2s; }
 .send:hover { background: transparent; color: var(--ink); }
 .send--link { display: inline-block; text-decoration: none; }
 .send--ghost { background: transparent; color: var(--ink); cursor: pointer; }
 .send--ghost:hover { background: var(--ink); color: var(--paper); }
+.send-badge { position: relative; overflow: hidden; display: inline-flex; align-items: center; justify-content: center; height: 53px; padding: 0; transition: width .55s cubic-bezier(.34, 1.45, .64, 1), background-color .3s, color .3s, border-color .3s; }
+.send-badge__content, .send-badge__measure { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 0 32px; white-space: nowrap; }
+.send-badge__content { position: absolute; inset: 0; }
+.send-badge__measure { position: absolute; inset: auto; visibility: hidden; pointer-events: none; }
+.send-badge[data-state="processing"], .send-badge[data-state="processing"]:hover { background: var(--ink); color: var(--paper); border-color: var(--ink); cursor: wait; }
+.send-badge[data-state="success"], .send-badge[data-state="success"]:hover { background: var(--accent); color: var(--ink); border-color: var(--accent); }
+.send-badge[data-state="error"], .send-badge[data-state="error"]:hover { background: #d92d20; color: #fff; border-color: #d92d20; }
+.send-badge__icon { width: 16px; height: 16px; display: block; flex: none; }
+.send-badge .spin { transform-origin: center; animation: send-spin .8s linear infinite; }
+.send-badge .draw { stroke-dasharray: 24; stroke-dashoffset: 24; animation: send-draw .4s .12s ease-out forwards; }
+@keyframes send-spin { to { transform: rotate(360deg); } }
+@keyframes send-draw { to { stroke-dashoffset: 0; } }
+.send-badge:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) {
+  .send-badge { transition: background-color .3s, color .3s, border-color .3s; }
+  .send-badge .spin { animation: none; }
+  .send-badge .draw { animation: none; stroke-dashoffset: 0; }
+}
 .form-ready { display: grid; gap: 18px; border-top: 1px solid var(--ink); padding-top: 24px; }
 .form-ready[hidden] { display: none; }
 .form-ready-title { color: var(--ink); font-size: 13px; }
@@ -760,8 +798,7 @@ html.curtain-in.curtain-out::after { pointer-events: none; animation: curtain-ou
   border-bottom: 1px solid var(--ink); padding: 8px 28px 12px 0; width: 100%; text-align: left; cursor: pointer;
 }
 .select-btn.is-placeholder { color: var(--gray-text); }
-.select-btn:focus-visible { outline: 0; border-bottom-width: 2px; padding-bottom: 11px; }
-.select-btn.is-invalid { border-bottom: 2px solid var(--ink); padding-bottom: 11px; box-shadow: 0 3px 0 -1px var(--accent); }
+.select-btn:focus-visible { outline: 0; }
 .select-list {
   position: absolute; left: 0; right: 0; top: 100%; z-index: 20; margin: 0; padding: 0; list-style: none;
   background: var(--paper); border: 1px solid var(--ink); max-height: 280px; overflow-y: auto;
