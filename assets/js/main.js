@@ -1355,7 +1355,8 @@
     (function () {
       var sel = form.querySelector('.field--select select');
       if (!sel) return;
-      var field = sel.parentNode;
+      var field = sel.closest ? sel.closest('.field') : sel.parentNode.parentNode;
+      var host = sel.parentNode;
       var label = field.querySelector('label');
       var opts = Array.prototype.filter.call(sel.options, function (o) { return !o.disabled && o.value !== ''; });
       var placeholder = (sel.querySelector('option[disabled]') || {}).textContent || 'Elige una opción';
@@ -1395,12 +1396,7 @@
         });
         txt.textContent = cur > -1 ? opts[cur].textContent : placeholder;
         btn.classList.toggle('is-placeholder', cur < 0);
-        if (cur > -1) setError(false);
         return cur;
-      };
-      var setError = function (on) {
-        btn.classList.toggle('is-invalid', on);
-        if (on) btn.setAttribute('aria-invalid', 'true'); else btn.removeAttribute('aria-invalid');
       };
       var setActive = function (i) {
         if (!items.length) return;
@@ -1417,13 +1413,15 @@
         var cur = sync(); setActive(cur > -1 ? cur : 0);
       };
       var close = function (refocus) {
-        if (isOpen()) {
+        var wasOpen = isOpen();
+        if (wasOpen) {
           list.classList.remove('is-open'); list.classList.add('is-closing');
           window.clearTimeout(closeTimer);
           closeTimer = window.setTimeout(function () { list.classList.remove('is-closing'); }, closeMs());
         }
         btn.setAttribute('aria-expanded', 'false'); btn.removeAttribute('aria-activedescendant');
         if (refocus) btn.focus();
+        if (wasOpen) sel.dispatchEvent(new Event('selectclose'));
       };
       var choose = function (i) {
         if (i < 0 || i >= opts.length) return;
@@ -1464,26 +1462,275 @@
       doc.addEventListener('click', function (e) { if (isOpen() && !field.contains(e.target)) close(false); });
       btn.addEventListener('blur', function () { window.setTimeout(function () { if (isOpen() && doc.activeElement !== btn) close(false); }, 0); });
 
-      /* validación: el select oculto sigue siendo required; el error se ve y enfoca en el botón */
-      sel.addEventListener('invalid', function (e) {
-        e.preventDefault();
-        setError(true);
-        if (form.querySelector(':invalid') === sel) btn.focus();
-      });
+      /* validación: el select oculto sigue siendo required; los estados los maneja fieldsApi (campos multiestado) */
       sel.addEventListener('change', sync);
-      form.addEventListener('reset', function () { window.setTimeout(function () { close(false); setError(false); sync(); }, 0); });
+      form.addEventListener('reset', function () { window.setTimeout(function () { close(false); sync(); }, 0); });
 
       window.addEventListener('pageshow', sync);
       sel.classList.add('select-native');
       sel.tabIndex = -1; sel.setAttribute('aria-hidden', 'true');
-      field.appendChild(btn); field.appendChild(list);
+      host.appendChild(btn); host.appendChild(list);
       field.classList.add('is-custom');
       sync();
     })();
+    /* Campos multiestado (idle → focus → valid / error), mismo lenguaje de animación que el badge.
+     * El estado vive en data-state de cada .field; la validación es propia (form con novalidate). */
+    var fieldsApi = (function () {
+      var EASE = 'cubic-bezier(.22,1,.36,1)';
+      var SHAKE = ['translateX(0)', 'translateX(-7px)', 'translateX(6px)', 'translateX(-4px)', 'translateX(3px)', 'translateX(0)'];
+      var svgOpen = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">';
+      var ICONS = {
+        valid: svgOpen + '<path class="draw" d="M5 12.5l4.5 4.5L19 7.5" stroke-width="2.6"/></svg>',
+        error: svgOpen + '<path class="draw" d="M7 7l10 10M17 7L7 17" stroke-width="2.6"/></svg>'
+      };
+      var MSG = {
+        'f-nombre': { empty: 'Falta tu nombre' },
+        'f-correo': { empty: 'Falta tu correo', bad: 'Revisa el correo' },
+        'f-necesidad': { empty: 'Elige una opción' },
+        'f-mensaje': { empty: 'Cuéntanos un poco más' }
+      };
+      var reduce = function () { return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches); };
+      var recs = [];
+      form.setAttribute('novalidate', '');
+
+      function validate(rec, force) {
+        var el = rec.el, v = (el.value || '').trim();
+        if (!v) {
+          if (!el.required) return 'idle';
+          return (force || rec.dirty) ? 'error' : 'idle';
+        }
+        return el.validity.valid ? 'valid' : 'error';
+      }
+      function messageFor(rec) {
+        var m = MSG[rec.el.id] || {};
+        return (rec.el.value || '').trim() ? (m.bad || 'Revisa este campo') : (m.empty || 'Campo obligatorio');
+      }
+      function shake(rec, delay) {
+        if (reduce() || !rec.ctl.animate) return;
+        rec.ctl.animate({ transform: SHAKE }, { duration: 420, delay: delay || 0 });
+      }
+      function showMsg(rec, text, instant) {
+        var m = rec.msg;
+        if (rec.msgAnim) { rec.msgAnim.cancel(); rec.msgAnim = null; }
+        if (m.textContent === text) return;
+        var had = !!m.textContent;
+        m.textContent = text;
+        if (!instant && !had && !reduce() && m.animate) {
+          m.animate([{ opacity: 0, transform: 'translateY(8px)', filter: 'blur(4px)' }, { opacity: 1, transform: 'translateY(0)', filter: 'blur(0)' }],
+            { duration: 320, easing: EASE, fill: 'backwards' });
+        }
+      }
+      function hideMsg(rec, instant) {
+        var m = rec.msg;
+        if (rec.msgAnim) { rec.msgAnim.cancel(); rec.msgAnim = null; }
+        if (!m.textContent) return;
+        if (instant || reduce() || !m.animate) { m.textContent = ''; return; }
+        var a = m.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 160, easing: 'ease-in', fill: 'forwards' });
+        rec.msgAnim = a;
+        a.onfinish = function () {
+          if (rec.msgAnim !== a) return;
+          m.textContent = ''; rec.msgAnim = null; a.cancel();
+        };
+      }
+      function setIcon(rec, kind, instant) {
+        if (kind === rec.iconKind) return;
+        var old = rec.icon;
+        rec.icon = null; rec.iconKind = kind;
+        if (old) {
+          if (instant || reduce() || !old.animate) old.remove();
+          else {
+            var o = old.animate([{ opacity: 1, transform: 'translateY(0)', filter: 'blur(0)' }, { opacity: 0, transform: 'translateY(-10px)', filter: 'blur(4px)' }],
+              { duration: 180, easing: 'ease-in', fill: 'forwards' });
+            o.onfinish = function () { old.remove(); };
+          }
+        }
+        if (!kind) return;
+        var n = doc.createElement('span');
+        n.className = 'field__icon field__icon--' + kind;
+        n.setAttribute('aria-hidden', 'true');
+        n.innerHTML = ICONS[kind];
+        rec.ctl.appendChild(n); rec.icon = n;
+        if (!instant && !reduce() && n.animate) {
+          n.animate([{ opacity: 0, transform: 'translateY(10px)', filter: 'blur(4px)' }, { opacity: 1, transform: 'translateY(0)', filter: 'blur(0)' }],
+            { duration: 320, easing: EASE, fill: 'backwards' });
+        }
+      }
+      function setState(rec, state, instant) {
+        if (instant) rec.field.classList.add('is-instant');
+        rec.field.dataset.state = state;
+        if (state === 'error') {
+          rec.focusEl.setAttribute('aria-invalid', 'true');
+          showMsg(rec, messageFor(rec), instant);
+          setIcon(rec, 'error', instant);
+        } else {
+          rec.focusEl.removeAttribute('aria-invalid');
+          hideMsg(rec, instant);
+          if (state === 'valid') setIcon(rec, 'valid', instant);
+          else if (state === 'idle') setIcon(rec, null, instant);
+        }
+        if (instant) { void rec.field.offsetWidth; rec.field.classList.remove('is-instant'); }
+      }
+      function settle(rec) {
+        var prev = rec.field.dataset.state;
+        var r = validate(rec, false);
+        setState(rec, r);
+        if (r === 'error' && prev !== 'error') shake(rec, 0);
+      }
+      function live(rec) {
+        rec.dirty = true;
+        var cur = rec.field.dataset.state, r = validate(rec, true);
+        if (cur === 'error') {
+          if (r === 'valid') setState(rec, 'valid');
+          else if (r === 'error') showMsg(rec, messageFor(rec));
+          else setState(rec, 'focus');
+        } else if (rec.iconKind === 'valid' && r !== 'valid') {
+          setIcon(rec, null);
+          if (cur === 'valid') rec.field.dataset.state = 'focus';
+        }
+      }
+
+      Array.prototype.forEach.call(form.querySelectorAll('.field'), function (field) {
+        var el = field.querySelector('input, textarea, select');
+        var ctl = field.querySelector('.field__control');
+        if (!el || !ctl) return;
+        var focusEl = field.querySelector('.select-btn') || el;
+        var msg = doc.createElement('p');
+        msg.className = 'field__msg'; msg.id = el.id + '-msg'; msg.setAttribute('aria-live', 'polite');
+        field.appendChild(msg);
+        var prevDesc = focusEl.getAttribute('aria-describedby');
+        focusEl.setAttribute('aria-describedby', (prevDesc ? prevDesc + ' ' : '') + msg.id);
+        var rec = { field: field, el: el, ctl: ctl, focusEl: focusEl, msg: msg, icon: null, iconKind: null, dirty: false, msgAnim: null };
+        field.dataset.state = 'idle';
+        recs.push(rec);
+
+        focusEl.addEventListener('focus', function () {
+          if (field.dataset.state !== 'error') setState(rec, 'focus');
+        });
+        focusEl.addEventListener('blur', function () { settle(rec); });
+        if (el.tagName === 'SELECT') {
+          el.addEventListener('change', function () {
+            rec.dirty = true;
+            setState(rec, validate(rec, true));
+          });
+          el.addEventListener('selectclose', function () {
+            /* cerrar sin elegir no marca error: con valor → valid; error previo se mantiene; si no, focus/idle */
+            var cur = field.dataset.state;
+            if (validate(rec, true) === 'valid') setState(rec, 'valid');
+            else if (cur !== 'error') setState(rec, doc.activeElement === focusEl ? 'focus' : 'idle');
+          });
+        } else {
+          el.addEventListener('input', function () { live(rec); });
+        }
+      });
+
+      form.addEventListener('reset', function () {
+        window.setTimeout(function () {
+          recs.forEach(function (rec) { rec.dirty = false; setState(rec, 'idle', true); });
+        }, 0);
+      });
+
+      return {
+        /* Valida todo; marca errores con sacudida escalonada y enfoca el primero inválido */
+        validateAll: function () {
+          var bad = [];
+          recs.forEach(function (rec) {
+            rec.dirty = true;
+            var r = validate(rec, true);
+            setState(rec, r);
+            if (r === 'error') bad.push(rec);
+          });
+          bad.forEach(function (rec, i) { shake(rec, i * 60); });
+          if (bad.length) bad[0].focusEl.focus();
+          return bad.length === 0;
+        }
+      };
+    })();
+    function setBadge(btn, state) {
+      if (!btn) return;
+      var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var svgOpen = '<svg class="send-badge__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">';
+      var html = {
+        idle: 'Enviar <span aria-hidden="true">→</span>',
+        processing: svgOpen + '<circle cx="12" cy="12" r="9" stroke-width="2.4" opacity=".25"/><path class="spin" d="M21 12a9 9 0 0 0-9-9" stroke-width="2.4"/></svg>Enviando',
+        success: svgOpen + '<path class="draw" d="M5 12.5l4.5 4.5L19 7.5" stroke-width="2.6"/></svg>Enviado',
+        error: svgOpen + '<path class="draw" d="M7 7l10 10M17 7L7 17" stroke-width="2.6"/></svg>No se envió'
+      }[state] || '';
+      var measure = btn.querySelector('.send-badge__measure');
+      if (!measure) {
+        measure = document.createElement('span');
+        measure.className = 'send-badge__measure';
+        measure.setAttribute('aria-hidden', 'true');
+        btn.appendChild(measure);
+      }
+      measure.innerHTML = html;
+      btn.style.width = measure.offsetWidth + 'px';
+      btn.dataset.state = state;
+      var old = btn._badgeCurrent || btn.querySelector('.send-badge__content');
+      Array.prototype.slice.call(btn.querySelectorAll('.send-badge__content')).forEach(function (n) {
+        if (n !== old) n.remove();
+      });
+      var next = document.createElement('span');
+      next.className = 'send-badge__content';
+      next.innerHTML = html;
+      btn._badgeCurrent = next;
+      if (reduce || !next.animate) {
+        if (old) old.remove();
+        btn.appendChild(next);
+        return;
+      }
+      if (old) {
+        var out = old.animate(
+          [{ opacity: 1, transform: 'translateY(0)', filter: 'blur(0)' }, { opacity: 0, transform: 'translateY(-10px)', filter: 'blur(4px)' }],
+          { duration: 180, easing: 'ease-in', fill: 'forwards' }
+        );
+        out.onfinish = function () { old.remove(); };
+      }
+      btn.appendChild(next);
+      next.animate(
+        [{ opacity: 0, transform: 'translateY(10px) scale(.96)', filter: 'blur(4px)' }, { opacity: 1, transform: 'translateY(0) scale(1)', filter: 'blur(0)' }],
+        { duration: 320, delay: old ? 90 : 0, easing: 'cubic-bezier(.22,1,.36,1)', fill: 'backwards' }
+      );
+      if (state === 'error' && btn.animate) {
+        btn.animate({ transform: ['translateX(0)', 'translateX(-7px)', 'translateX(6px)', 'translateX(-4px)', 'translateX(3px)', 'translateX(0)'] }, { duration: 420, delay: 120 });
+      } else if (state === 'success' && btn.animate) {
+        btn.animate({ transform: ['scale(1)', 'scale(1.04)', 'scale(1)'] }, { duration: 380, delay: 120 });
+      }
+    }
+    if (sendBtn) {
+      var fitIdle = function () {
+        if (sendBtn.dataset.state !== 'idle') return;
+        var m = sendBtn.querySelector('.send-badge__measure');
+        if (!m) {
+          m = document.createElement('span');
+          m.className = 'send-badge__measure';
+          m.setAttribute('aria-hidden', 'true');
+          sendBtn.appendChild(m);
+        }
+        m.innerHTML = 'Enviar <span aria-hidden="true">→</span>';
+        sendBtn.style.transition = 'none';
+        sendBtn.style.width = m.offsetWidth + 'px';
+        void sendBtn.offsetWidth;
+        sendBtn.style.transition = '';
+      };
+      sendBtn._badgeCurrent = sendBtn.querySelector('.send-badge__content');
+      sendBtn.dataset.state = 'idle';
+      fitIdle();
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitIdle);
+      var badgeResizeTimer;
+      window.addEventListener('resize', function () {
+        window.clearTimeout(badgeResizeTimer);
+        badgeResizeTimer = window.setTimeout(fitIdle, 150);
+      });
+    }
     form.addEventListener('submit', function (e) {
       e.preventDefault();
       if (sending) return;
-      if (!form.checkValidity()) { form.reportValidity(); return; }
+      if (!fieldsApi.validateAll()) {
+        if (sendBtn && sendBtn.animate && !(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)) {
+          sendBtn.animate({ transform: ['translateX(0)', 'translateX(-7px)', 'translateX(6px)', 'translateX(-4px)', 'translateX(3px)', 'translateX(0)'] }, { duration: 420, delay: 120 });
+        }
+        return;
+      }
       var quien = val('empresa') || val('nombre');
       var subject = 'Nuevo proyecto — ' + quien;
       mailBody = 'Nombre: ' + val('nombre') + '\n' +
@@ -1505,13 +1752,16 @@
       data.append('from_name', 'Web Montaña Dept');
       data.append('replyto', val('correo'));
       sending = true;
-      if (sendBtn) { sendBtn.disabled = true; sendBtn.firstChild.nodeValue = 'Enviando '; }
+      if (sendBtn) { sendBtn.disabled = true; setBadge(sendBtn, 'processing'); }
       fetch('https://api.web3forms.com/submit', { method: 'POST', body: data, headers: { Accept: 'application/json' } })
         .then(function (r) { return r.json().then(function (j) { return r.ok && j && j.success; }); })
         .catch(function () { return false; })
         .then(function (ok) {
           sending = false;
-          if (sendBtn) { sendBtn.disabled = false; sendBtn.firstChild.nodeValue = 'Enviar '; }
+          if (sendBtn) {
+            setBadge(sendBtn, ok ? 'success' : 'error');
+            window.setTimeout(function () { sendBtn.disabled = false; setBadge(sendBtn, 'idle'); }, 2600);
+          }
           if (ok) {
             form.reset();
             showReady('Mensaje enviado. Te respondemos pronto.', false);
