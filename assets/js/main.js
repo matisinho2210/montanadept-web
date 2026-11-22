@@ -13,6 +13,79 @@
   window.addEventListener('pageshow', function (e) { if (e.persisted || !location.hash) toTop(); });
   window.addEventListener('load', function () { window.setTimeout(toTop, 0); });
 
+  /* ---------- transición de página "curtains" ----------
+     Salida (solo desde la lista de la portada): overlay con fade-in, flag en sessionStorage y navegación.
+     Entrada: el <head> pone html.curtain-in si hay flag; aquí, con las fuentes listas, se revela. */
+  (function () {
+    var root = doc.documentElement;
+    var KEY = 'md-curtain';
+    var MS = 400;
+    var store = function (fn) { try { return fn(); } catch (err) { return null; } };
+    var reduced = function () { return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches); };
+    var clearAll = function () {
+      store(function () { sessionStorage.removeItem(KEY); });
+      root.classList.remove('curtain-in', 'curtain-out');
+      var old = doc.querySelectorAll('.curtain');
+      for (var i = 0; i < old.length; i++) old[i].parentNode.removeChild(old[i]);
+    };
+
+    // Entrada
+    if (root.classList.contains('curtain-in')) {
+      store(function () { sessionStorage.removeItem(KEY); });
+      if (reduced()) { clearAll(); }
+      else {
+        var revealed = false;
+        var reveal = function () {
+          if (revealed) return;
+          revealed = true;
+          root.classList.add('curtain-out');
+          window.setTimeout(function () { root.classList.remove('curtain-in', 'curtain-out'); }, MS + 60);
+        };
+        var fontsReady = (doc.fonts && doc.fonts.ready) ? doc.fonts.ready : Promise.resolve();
+        var capped = new Promise(function (res) { window.setTimeout(res, 800); });
+        Promise.race([fontsReady, capped]).then(reveal, reveal);
+        window.setTimeout(function () { revealed = true; clearAll(); }, 2000);
+      }
+    }
+
+    // Salida
+    var list = doc.querySelector('.hm-list');
+    if (list) {
+      var leaving = false;
+      list.addEventListener('click', function (e) {
+        var a = e.target.closest ? e.target.closest('a[href]') : null;
+        if (!a || !list.contains(a) || e.defaultPrevented || leaving) return;
+        if (e.button !== 0 || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
+        if (a.target && a.target !== '_self') return;
+        if (a.hasAttribute('download') || reduced()) return;
+        var url;
+        try { url = new URL(a.href, location.href); } catch (err) { return; }
+        if (url.origin !== location.origin || (url.pathname === location.pathname && url.hash)) return;
+        e.preventDefault();
+        leaving = true;
+        var veil = doc.createElement('div');
+        veil.className = 'curtain';
+        veil.setAttribute('aria-hidden', 'true');
+        body.appendChild(veil);
+        void veil.offsetWidth;
+        veil.classList.add('is-in');
+        var go = function () {
+          if (go.done) return;
+          go.done = true;
+          store(function () { sessionStorage.setItem(KEY, '1'); });
+          location.href = a.href;
+        };
+        veil.addEventListener('transitionend', go);
+        window.setTimeout(go, MS + 100);
+      });
+    }
+
+    // Atrás/adelante con bfcache: nunca volver a una página tapada
+    window.addEventListener('pageshow', function (e) {
+      if (e.persisted) { clearAll(); leaving = false; }
+    });
+  })();
+
   // Prefijo para rutas: las fichas (carpeta /proyectos) usan data-base="../"
   var base = body.getAttribute('data-base') || '';
   var PROYECTOS = Array.isArray(window.PROYECTOS) ? window.PROYECTOS : [];
@@ -314,9 +387,10 @@
     }
     return out + forced.map(fullRow).join('');
   }
-  function gallery(title, items, id) {
+  function gallery(title, items, id, stg) {
     if (!items.length) return '';
-    return '<section class="gal" aria-labelledby="' + id + '" data-rv>' +
+    // stg: galería de sesiones con entrada escalonada (sin fade data-rv: evita doble efecto)
+    return '<section class="gal" aria-labelledby="' + id + '"' + (stg ? ' data-stg' : ' data-rv') + '>' +
       '<div class="gal-label mono"><h2 id="' + id + '">' + esc(title) + ' — ' + plural(items.length, 'pieza', 'piezas') + '</h2><span aria-hidden="true">[ ↓ ]</span></div>' +
       galleryRows(items) + '</section>';
   }
@@ -487,6 +561,61 @@
     sesSetOpen(row, true);
     row.scrollIntoView({ behavior: 'auto', block: 'start' });
   }
+  /* Entrada escalonada de fotos de sesiones: opacity+scale con resorte, delay aleatorio (0.05 s por ítem) al entrar la galería */
+  function initStagger(root) {
+    if (!('IntersectionObserver' in window) || !motionOK()) return; // sin efecto: todo visible
+    var scopes = root.querySelectorAll('.ses-pics, [data-stg]');
+    if (!scopes.length) return;
+    var vh = window.innerHeight || 800;
+    function shuffled(n) {
+      var a = [], i, j, t;
+      for (i = 0; i < n; i++) a.push(i);
+      for (i = n - 1; i > 0; i--) { j = Math.floor(Math.random() * (i + 1)); t = a[i]; a[i] = a[j]; a[j] = t; }
+      return a;
+    }
+    function show(it) {
+      it.classList.add('is-in');
+      // al terminar se quita el estado para no dejar transform residual (visor, hover, nitidez)
+      window.setTimeout(function () {
+        it.classList.remove('stg-item', 'is-in');
+        it.style.removeProperty('--stg-delay');
+      }, (parseFloat(it.style.getPropertyValue('--stg-delay')) || 0) + 900);
+    }
+    var ioItem = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        ioItem.unobserve(en.target);
+        show(en.target);
+      });
+    }, { threshold: 0.1 });
+    var ioScope = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        var sc = en.target, items = sc._stg;
+        ioScope.unobserve(sc);
+        if (!items) return;
+        if (sc.offsetHeight > vh * 2) { // galería alta: cada ítem entra al verse, con delay aleatorio corto
+          items.forEach(function (it) {
+            it.style.setProperty('--stg-delay', Math.round(Math.random() * 300) + 'ms');
+            ioItem.observe(it);
+          });
+        } else {
+          items.forEach(function (it) { show(it); });
+        }
+      });
+    }, { threshold: 0, rootMargin: '0px' });
+    Array.prototype.forEach.call(scopes, function (sc) {
+      var items = Array.prototype.slice.call(sc.matches('.ses-pics') ? sc.children : sc.querySelectorAll('.gal-row > figure'));
+      if (!items.length) return;
+      var n = items.length, step = n > 24 ? Math.min(50, 1200 / n) : 50, order = shuffled(n);
+      items.forEach(function (it, i) {
+        it.classList.add('stg-item');
+        it.style.setProperty('--stg-delay', Math.round(order[i] * step) + 'ms');
+      });
+      sc._stg = items;
+      ioScope.observe(sc);
+    });
+  }
   function sesAnimate(row) {
     if (!motionOK()) return;
     var m = row.querySelector('.ses-main');
@@ -504,7 +633,7 @@
     return '<section class="gal" aria-labelledby="' + id + '">' +
       '<div class="gal-label mono"><h2 id="' + id + '">Sesiones — ' + plural(count, 'pieza', 'piezas') + '</h2><span aria-hidden="true">[ ↓ ]</span></div>' +
       seriesCovers(p) + seriesFolders(p) +
-      (vids.length ? '<div data-rv>' + galleryRows(vids) + '</div>' : '') + '</section>';
+      (vids.length ? '<div data-stg>' + galleryRows(vids) + '</div>' : '') + '</section>';
   }
   /* ---------- diseño agrupado (manual, menú, carruseles) ---------- */
   var reduceMq = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
@@ -797,7 +926,7 @@
       };
 
       var rest = (disenoSeries ? disenoGroups(p) : gallery('Diseño', diseno, 'g-diseno')) +
-        (hasSeries ? seriesGallery(p, 'g-sesiones') : gallery('Sesiones', sesiones, 'g-sesiones')) +
+        (hasSeries ? seriesGallery(p, 'g-sesiones') : gallery('Sesiones', sesiones, 'g-sesiones', true)) +
         (total > 1
           ? '<nav class="fx-next" aria-label="Más proyectos" data-rv>' + navLink(prev, 'prev') + navLink(next, 'next') + '</nav>'
           : '');
@@ -840,6 +969,7 @@
       applyAspect(root);
       initCarousels(root);
       initSesVideos(root);
+      initStagger(root);
       sesFromHash(root);
       toTop();
     }
@@ -1079,6 +1209,116 @@
     }, { threshold: 0.05 });
     Array.prototype.forEach.call(reveals, function (el) { if (!el.classList.contains('in')) io.observe(el); });
   }
+
+  /* ---------- streaming text: textos que aparecen palabra por palabra al hacer scroll ---------- */
+  (function streamText() {
+    var main = doc.querySelector('main');
+    if (!main || !('IntersectionObserver' in window) || !motionOK()) return; // sin efecto: texto normal
+
+    // Bloques de texto (se usa el más interno: nunca se anidan)
+    var BLOCKS = 'h1,h2,h3,h4,h5,h6,p,li,blockquote,dt,dd,figcaption';
+    // Bloques que NO se tocan (ellos y todo lo que contienen)
+    var EXCLUDE = 'header,footer,nav,form,button,label,input,select,textarea,.hm-list,.sr-only,.hm-h1,.hdr-clock,[data-reloj],[data-count],' +
+      '#tira-count,#filtro-estado,.car-ctl,.car-count,.lb,.btn-ink,.send,.header-cta,.ses-card-l,.ses-all,' +
+      '[aria-hidden="true"],[aria-live],[role="status"],[role="alert"],[data-no-stream]';
+    // Dentro de un bloque, estos textos se dejan como están
+    var SKIP_TEXT = 'script,style,noscript,svg,button,.sr-only,[aria-hidden="true"],[data-no-stream]';
+    var MAX_MS = 1200;
+
+    var rawGap = getComputedStyle(doc.documentElement).getPropertyValue('--stream-gap').trim();
+    var gap = parseFloat(rawGap);
+    if (/[\d.]s$/.test(rawGap)) gap *= 1000; // "0.06s" -> 60ms
+    if (!isFinite(gap) || gap <= 0) gap = 60;
+
+    function wrapWords(block) {
+      var walker = doc.createTreeWalker(block, NodeFilter.SHOW_TEXT, null);
+      var nodes = [];
+      var n;
+      while ((n = walker.nextNode())) {
+        if (!/\S/.test(n.nodeValue)) continue;
+        var par = n.parentNode;
+        if (par.closest && par.closest(SKIP_TEXT)) continue;
+        nodes.push(n);
+      }
+      var words = [];
+      nodes.forEach(function (node) {
+        var par = node.parentNode;
+        var disp = getComputedStyle(par).display;
+        var frag = doc.createDocumentFragment();
+        node.nodeValue.split(/(\s+)/).forEach(function (tok) {
+          if (!tok) return;
+          if (/^\s+$/.test(tok)) { frag.appendChild(doc.createTextNode(tok)); return; }
+          var w = doc.createElement('span');
+          w.className = 't-stream-w';
+          w.textContent = tok;
+          words.push(w);
+          frag.appendChild(w);
+        });
+        if (/flex|grid/.test(disp)) { // el texto suelto en flex/grid era un solo ítem: se conserva así
+          var run = doc.createElement('span');
+          run.className = 't-stream-run';
+          run.appendChild(frag);
+          par.replaceChild(run, node);
+        } else {
+          par.replaceChild(frag, node);
+        }
+      });
+      return words;
+    }
+
+    function play(block) {
+      var words = block._sw;
+      block._sw = null;
+      if (!words || !words.length) return;
+      var step = Math.min(gap, MAX_MS / words.length);
+      var t0 = null;
+      var shown = 0;
+      var tick = function (t) {
+        if (t0 === null) t0 = t;
+        var upto = Math.min(words.length, Math.floor((t - t0) / step) + 1);
+        while (shown < upto) { words[shown].classList.add('is-in'); shown += 1; }
+        if (shown < words.length) window.requestAnimationFrame(tick);
+      };
+      window.requestAnimationFrame(tick);
+    }
+
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        if (en.intersectionRatio < 0.15 && en.intersectionRect.height < 80) return; // bloques muy altos
+        io.unobserve(en.target);
+        play(en.target);
+      });
+    }, { threshold: [0, 0.15], rootMargin: '0px' });
+
+    function scan() {
+      Array.prototype.forEach.call(main.querySelectorAll(BLOCKS), function (el) {
+        if (el.hasAttribute('data-stream')) return;
+        if (el.querySelector(BLOCKS)) return;      // solo bloques hoja
+        if (el.closest(EXCLUDE)) return;
+        if (!/\S/.test(el.textContent)) return;
+        var words = wrapWords(el);
+        if (!words.length) return;
+        el.setAttribute('data-stream', 'ready');
+        el._sw = words;
+        var rv = el.closest('[data-rv]');
+        if (rv) rv.classList.add('rv-text');
+        io.observe(el);
+      });
+    }
+
+    scan();
+    // contenido generado después (filtro, vistas, filas abiertas): se procesa solo lo nuevo
+    if ('MutationObserver' in window) {
+      var queued = false;
+      var mo = new MutationObserver(function () {
+        if (queued) return;
+        queued = true;
+        window.requestAnimationFrame(function () { queued = false; scan(); mo.takeRecords(); });
+      });
+      mo.observe(main, { childList: true, subtree: true });
+    }
+  })();
 
   /* ---------- formulario de contacto ---------- */
   /*
