@@ -13,76 +13,135 @@
   window.addEventListener('pageshow', function (e) { if (e.persisted || !location.hash) toTop(); });
   window.addEventListener('load', function () { window.setTimeout(toTop, 0); });
 
-  /* ---------- transición de página "curtains" ----------
-     Salida (solo desde la lista de la portada): overlay con fade-in, flag en sessionStorage y navegación.
-     Entrada: el <head> pone html.curtain-in si hay flag; aquí, con las fuentes listas, se revela. */
+  /* ---------- transición de página "blinds" (persianas) ----------
+     Salida: en cualquier enlace interno, láminas verticales bajan desde arriba (escalonadas) y luego se navega.
+     Entrada: el <head> pone html.curtain-in si hay flag; aquí se monta el overlay cubriendo, y con las fuentes listas
+     las láminas se recogen hacia abajo. window.mdRevealed (Promise) y el evento 'md:revealed' avisan cuando terminó. */
+  window.mdIsRevealed = false;
+  var mdResolve;
+  window.mdRevealed = new Promise(function (res) { mdResolve = res; });
   (function () {
     var root = doc.documentElement;
     var KEY = 'md-curtain';
-    var MS = 400;
+    var leaving = false;
     var store = function (fn) { try { return fn(); } catch (err) { return null; } };
     var reduced = function () { return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches); };
+    var cssMs = function (name, fallback) {
+      var raw = getComputedStyle(root).getPropertyValue(name).trim();
+      var v = parseFloat(raw);
+      if (!isFinite(v)) return fallback;
+      return /[\d.]s$/.test(raw) && !/ms$/.test(raw) ? v * 1000 : v;
+    };
+    var markRevealed = function () {
+      if (window.mdIsRevealed) return;
+      window.mdIsRevealed = true;
+      mdResolve();
+      doc.dispatchEvent(new Event('md:revealed'));
+    };
     var clearAll = function () {
       store(function () { sessionStorage.removeItem(KEY); });
-      root.classList.remove('curtain-in', 'curtain-out');
-      var old = doc.querySelectorAll('.curtain');
+      root.classList.remove('curtain-in', 'blinds-ready');
+      var old = doc.querySelectorAll('.blinds');
       for (var i = 0; i < old.length; i++) old[i].parentNode.removeChild(old[i]);
+      leaving = false;
+    };
+    // Crea el overlay con N láminas; state: 'is-covering' (entrada) o 'is-closing' (salida)
+    var buildBlinds = function (state) {
+      var n = parseInt(getComputedStyle(root).getPropertyValue('--blinds-n'), 10);
+      if (!isFinite(n) || n < 1) n = 10;
+      var ms = cssMs('--blinds-ms', 520);
+      var stagger = cssMs('--blinds-stagger', 45);
+      var wrap = doc.createElement('div');
+      wrap.className = 'blinds ' + state;
+      wrap.setAttribute('aria-hidden', 'true');
+      var last = null;
+      for (var i = 0; i < n; i++) {
+        var s = doc.createElement('span');
+        s.className = 'blinds__slat';
+        s.style.setProperty('--i', i);
+        wrap.appendChild(s);
+        last = s;
+      }
+      doc.body.appendChild(wrap);
+      return { el: wrap, last: last, total: (n - 1) * stagger + ms };
     };
 
-    // Entrada
+    // Entrada (try/finally: markRevealed() siempre corre; si algo falla se limpia overlay y clases)
+    try {
     if (root.classList.contains('curtain-in')) {
       store(function () { sessionStorage.removeItem(KEY); });
-      if (reduced()) { clearAll(); }
+      if (reduced() || !doc.body) { clearAll(); markRevealed(); }
       else {
-        var revealed = false;
-        var reveal = function () {
-          if (revealed) return;
-          revealed = true;
-          root.classList.add('curtain-out');
-          window.setTimeout(function () { root.classList.remove('curtain-in', 'curtain-out'); }, MS + 60);
+        var b = buildBlinds('is-covering');
+        root.classList.add('blinds-ready'); // quita la cobertura ::after: ahora cubre el overlay
+        var finished = false;
+        var finish = function () {
+          if (finished) return;
+          finished = true;
+          clearAll();
+          markRevealed();
+        };
+        var opened = false;
+        var open = function () {
+          if (opened || finished) return;
+          opened = true;
+          b.el.classList.remove('is-covering');
+          b.el.classList.add('is-opening');
+          b.last.addEventListener('animationend', finish);
+          window.setTimeout(finish, b.total + 80);
         };
         var fontsReady = (doc.fonts && doc.fonts.ready) ? doc.fonts.ready : Promise.resolve();
         var capped = new Promise(function (res) { window.setTimeout(res, 800); });
-        Promise.race([fontsReady, capped]).then(reveal, reveal);
-        window.setTimeout(function () { revealed = true; clearAll(); }, 2000);
+        Promise.race([fontsReady, capped]).then(open, open);
+        window.setTimeout(finish, 2500); // corte duro
       }
+    } else {
+      markRevealed();
+    }
+    } catch (err) {
+      clearAll();
+    } finally {
+      markRevealed();
     }
 
-    // Salida
-    var list = doc.querySelector('.hm-list');
-    if (list) {
-      var leaving = false;
-      list.addEventListener('click', function (e) {
-        var a = e.target.closest ? e.target.closest('a[href]') : null;
-        if (!a || !list.contains(a) || e.defaultPrevented || leaving) return;
-        if (e.button !== 0 || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
-        if (a.target && a.target !== '_self') return;
-        if (a.hasAttribute('download') || reduced()) return;
-        var url;
-        try { url = new URL(a.href, location.href); } catch (err) { return; }
-        if (url.origin !== location.origin || (url.pathname === location.pathname && url.hash)) return;
-        e.preventDefault();
-        leaving = true;
-        var veil = doc.createElement('div');
-        veil.className = 'curtain';
-        veil.setAttribute('aria-hidden', 'true');
-        body.appendChild(veil);
-        void veil.offsetWidth;
-        veil.classList.add('is-in');
-        var go = function () {
-          if (go.done) return;
-          go.done = true;
-          store(function () { sessionStorage.setItem(KEY, '1'); });
-          location.href = a.href;
-        };
-        veil.addEventListener('transitionend', go);
-        window.setTimeout(go, MS + 100);
-      });
-    }
+    // Salida: un único listener para todos los enlaces internos. Se registra en DOMContentLoaded (o en un
+    // setTimeout 0 si el documento ya cargó), es decir, después de los handlers de clic que main.js registra de
+    // forma síncrona en document; así corre tras ellos y e.defaultPrevented refleja lo que ya manejaron.
+    var FILE_EXT = /\.(?!html?$)[a-z0-9]{1,6}$/i;
+    var onClick = function (e) {
+      var a = e.target.closest ? e.target.closest('a[href]') : null;
+      if (!a || e.defaultPrevented || leaving) return;
+      if (e.button !== 0 || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
+      if (a.target && a.target !== '_self') return;
+      if (a.hasAttribute('download') || a.hasAttribute('data-no-transition') || reduced()) return;
+      var url;
+      try { url = new URL(a.href, location.href); } catch (err) { return; }
+      if (url.protocol !== 'http:' && url.protocol !== 'https:' && url.protocol !== 'file:') return;
+      if (url.origin !== location.origin) return;
+      if (url.pathname === location.pathname && url.search === location.search) return; // misma página (con o sin hash, incluye href="#")
+      var last = url.pathname.split('/').pop();
+      if (last && FILE_EXT.test(last)) return; // pdf, imágenes, zip, etc.
+      e.preventDefault();
+      leaving = true;
+      var b2 = buildBlinds('is-closing');
+      var go = function () {
+        if (go.done) return;
+        go.done = true;
+        store(function () { sessionStorage.setItem(KEY, '1'); });
+        location.href = a.href;
+      };
+      b2.last.addEventListener('animationend', go);
+      window.setTimeout(go, b2.total + 120);
+      // rescate: si pasados 3 s la página sigue viva (navegación bloqueada o cancelada), se libera todo
+      window.setTimeout(clearAll, 3000);
+    };
+    var bind = function () { doc.addEventListener('click', onClick); };
+    if (doc.readyState === 'loading') doc.addEventListener('DOMContentLoaded', bind);
+    else window.setTimeout(bind, 0);
 
     // Atrás/adelante con bfcache: nunca volver a una página tapada
     window.addEventListener('pageshow', function (e) {
-      if (e.persisted) { clearAll(); leaving = false; }
+      if (e.persisted) { clearAll(); markRevealed(); }
     });
   })();
 
@@ -1199,15 +1258,23 @@
     Array.prototype.forEach.call(reveals, function (el) { el.classList.add('in'); });
   } else {
     // lo que ya está a la vista al cargar se muestra sin animar
+    // (si hay transición de página en curso, espera a que se levanten las persianas y entonces entra con fade)
     Array.prototype.forEach.call(reveals, function (el) {
-      if (el.getBoundingClientRect().top < window.innerHeight) el.classList.add('in', 'now');
+      if (el.getBoundingClientRect().top < window.innerHeight) {
+        if (window.mdIsRevealed) el.classList.add('in', 'now');
+        else window.mdRevealed.then(function () { el.classList.add('in'); });
+      }
     });
     var io = new IntersectionObserver(function (entries) {
       entries.forEach(function (en) {
         if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); }
       });
     }, { threshold: 0.05 });
-    Array.prototype.forEach.call(reveals, function (el) { if (!el.classList.contains('in')) io.observe(el); });
+    Array.prototype.forEach.call(reveals, function (el) {
+      if (el.classList.contains('in')) return;
+      if (window.mdIsRevealed) { io.observe(el); return; }
+      window.mdRevealed.then(function () { if (!el.classList.contains('in')) io.observe(el); });
+    });
   }
 
   /* ---------- streaming text: textos que aparecen palabra por palabra al hacer scroll ---------- */
@@ -1291,6 +1358,13 @@
       });
     }, { threshold: [0, 0.15], rootMargin: '0px' });
 
+    // con transición de página en curso, no se observa (ni reproduce) nada hasta que se levanten las persianas
+    var held = [];
+    function watch(el) { if (window.mdIsRevealed) io.observe(el); else held.push(el); }
+    if (!window.mdIsRevealed) {
+      window.mdRevealed.then(function () { held.forEach(function (el) { io.observe(el); }); held = []; });
+    }
+
     function scan() {
       Array.prototype.forEach.call(main.querySelectorAll(BLOCKS), function (el) {
         if (el.hasAttribute('data-stream')) return;
@@ -1303,7 +1377,7 @@
         el._sw = words;
         var rv = el.closest('[data-rv]');
         if (rv) rv.classList.add('rv-text');
-        io.observe(el);
+        watch(el);
       });
     }
 
