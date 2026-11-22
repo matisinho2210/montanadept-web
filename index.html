@@ -40,14 +40,26 @@
 </head>
 <body class="is-home-dark">
 <a class="skip-link" href="#main">Saltar al contenido</a>
+<header class="site-header">
+  <div class="grid header-in">
+    <a class="brand" href="index.html"><img src="assets/logos/logo-horizontal-blanco.svg" alt="Montaña Dept" width="113" height="22"></a>
+    <p class="hdr-clock mono" aria-hidden="true"><span class="hdr-clock-l">Hora actual</span><span class="hdr-clock-t" id="reloj">SCL --:--</span></p>
+    <p class="hdr-date mono" aria-hidden="true"><span class="hdr-clock-l">Fecha actual</span><span class="hdr-clock-t" id="fecha">--/--/----</span></p>
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu"><span class="menu-btn-label">Menú</span></button>
+    <nav id="menu" class="nav" aria-label="Principal">
+      <ul class="nav-list">
+        <li><a href="proyectos.html">Proyectos</a></li>
+        <li><a href="nosotros.html">Nosotros</a></li>
+        <li><a href="servicios.html">Servicios</a></li>
+      </ul>
+      <a class="header-cta" href="contacto.html"><span class="header-cta-t">Empecemos un proyecto</span><span class="header-cta-a" aria-hidden="true">→</span></a>
+    </nav>
+  </div>
+</header>
 <div class="hm grain">
-  <header class="hm-bar">
-    <a class="hm-brand" href="index.html"><img src="assets/logos/isotipo-blanco.svg" alt="Montaña Dept, inicio" width="52" height="20"></a>
-    <p class="hm-clock" aria-hidden="true">[ <span id="reloj">SCL --:--</span> ]</p>
-  </header>
   <main id="main" class="hm-main">
     <h1 class="hm-h1">Montaña Dept — Agencia creativa en Santiago, Chile</h1>
-    <nav aria-label="Principal">
+    <nav aria-label="Secciones">
       <ul class="hm-list">
         <li class="hm-item"><a href="proyectos.html" data-tape="[ VER PROYECTOS ]"><span class="hm-t">Proyectos</span></a></li>
         <li class="hm-item"><a href="servicios.html" data-tape="[ VER SERVICIOS ]"><span class="hm-t">Servicios</span></a></li>
