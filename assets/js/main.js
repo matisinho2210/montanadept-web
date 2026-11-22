@@ -1350,6 +1350,136 @@
         if (ready.scrollIntoView) ready.scrollIntoView({ block: 'nearest' });
       }
     };
+    /* Select personalizado progresivo (menú desplegable animado con .t-dropdown).
+     * El <select> nativo sigue en el DOM (name/required) y se oculta solo con JS. */
+    (function () {
+      var sel = form.querySelector('.field--select select');
+      if (!sel) return;
+      var field = sel.parentNode;
+      var label = field.querySelector('label');
+      var opts = Array.prototype.filter.call(sel.options, function (o) { return !o.disabled && o.value !== ''; });
+      var placeholder = (sel.querySelector('option[disabled]') || {}).textContent || 'Elige una opción';
+      var uid = sel.id || 'f-select';
+      if (label && !label.id) label.id = uid + '-label';
+
+      var btn = doc.createElement('button');
+      btn.type = 'button'; btn.className = 'select-btn'; btn.id = uid + '-btn';
+      btn.setAttribute('role', 'combobox'); btn.setAttribute('aria-haspopup', 'listbox'); btn.setAttribute('aria-expanded', 'false');
+      btn.setAttribute('aria-controls', uid + '-list');
+      if (label) label.htmlFor = btn.id;
+      var txt = doc.createElement('span'); txt.className = 'select-btn-text'; btn.appendChild(txt);
+
+      var list = doc.createElement('ul');
+      list.className = 't-dropdown select-list'; list.id = uid + '-list'; list.setAttribute('role', 'listbox');
+      list.setAttribute('data-origin', 'top-left'); list.tabIndex = -1;
+      if (label) list.setAttribute('aria-labelledby', label.id);
+      var items = opts.map(function (o, i) {
+        var li = doc.createElement('li');
+        li.setAttribute('role', 'option'); li.id = uid + '-opt-' + i; li.setAttribute('aria-selected', 'false');
+        li.setAttribute('data-value', o.value); li.textContent = o.textContent;
+        list.appendChild(li); return li;
+      });
+
+      var active = -1, closeTimer = null;
+      var isOpen = function () { return list.classList.contains('is-open'); };
+      var closeMs = function () {
+        var v = window.getComputedStyle(doc.documentElement).getPropertyValue('--dropdown-close-dur').trim();
+        var n = parseFloat(v); if (isNaN(n)) return 150;
+        return /ms$/.test(v) ? n : (/s$/.test(v) ? n * 1000 : n);
+      };
+      var sync = function () {
+        var cur = -1;
+        items.forEach(function (li, i) {
+          var on = opts[i].value === sel.value; if (on) cur = i;
+          li.setAttribute('aria-selected', on ? 'true' : 'false');
+        });
+        txt.textContent = cur > -1 ? opts[cur].textContent : placeholder;
+        btn.classList.toggle('is-placeholder', cur < 0);
+        if (cur > -1) setError(false);
+        return cur;
+      };
+      var setError = function (on) {
+        btn.classList.toggle('is-invalid', on);
+        if (on) btn.setAttribute('aria-invalid', 'true'); else btn.removeAttribute('aria-invalid');
+      };
+      var setActive = function (i) {
+        if (!items.length) return;
+        active = Math.max(0, Math.min(items.length - 1, i));
+        items.forEach(function (li, k) { li.classList.toggle('is-active', k === active); });
+        btn.setAttribute('aria-activedescendant', items[active].id);
+        if (list.scrollIntoView && items[active].scrollIntoView) items[active].scrollIntoView({ block: 'nearest' });
+      };
+      var open = function () {
+        if (isOpen()) return;
+        window.clearTimeout(closeTimer);
+        list.classList.remove('is-closing'); list.classList.add('is-open');
+        btn.setAttribute('aria-expanded', 'true');
+        var cur = sync(); setActive(cur > -1 ? cur : 0);
+      };
+      var close = function (refocus) {
+        if (isOpen()) {
+          list.classList.remove('is-open'); list.classList.add('is-closing');
+          window.clearTimeout(closeTimer);
+          closeTimer = window.setTimeout(function () { list.classList.remove('is-closing'); }, closeMs());
+        }
+        btn.setAttribute('aria-expanded', 'false'); btn.removeAttribute('aria-activedescendant');
+        if (refocus) btn.focus();
+      };
+      var choose = function (i) {
+        if (i < 0 || i >= opts.length) return;
+        sel.value = opts[i].value; sync();
+        sel.dispatchEvent(new Event('input', { bubbles: true }));
+        sel.dispatchEvent(new Event('change', { bubbles: true }));
+        close(true);
+      };
+
+      btn.addEventListener('click', function () { if (isOpen()) close(false); else open(); });
+      btn.addEventListener('keydown', function (e) {
+        var k = e.key;
+        if (!isOpen()) {
+          if (k === 'Enter' || k === 'ArrowDown' || k === 'ArrowUp') { e.preventDefault(); open(); }
+          return;
+        }
+        if (k === 'ArrowDown') { e.preventDefault(); setActive(active + 1); }
+        else if (k === 'ArrowUp') { e.preventDefault(); setActive(active - 1); }
+        else if (k === 'Home') { e.preventDefault(); setActive(0); }
+        else if (k === 'End') { e.preventDefault(); setActive(items.length - 1); }
+        else if (k === 'Enter') { e.preventDefault(); choose(active); }
+        else if (k === 'Escape') { e.preventDefault(); e.stopPropagation(); close(true); }
+        else if (k === 'Tab') { close(false); }
+      });
+      /* Espacio en <button> dispara el click en keyup: abierto elige; cerrado lo abre el click nativo */
+      btn.addEventListener('keyup', function (e) {
+        if (e.key === ' ' && isOpen()) { e.preventDefault(); choose(active); }
+      });
+      list.addEventListener('mousedown', function (e) { e.preventDefault(); });
+      list.addEventListener('click', function (e) {
+        var li = e.target.closest ? e.target.closest('li') : null;
+        if (li) choose(items.indexOf(li));
+      });
+      list.addEventListener('mousemove', function (e) {
+        var li = e.target.closest ? e.target.closest('li') : null;
+        if (li && items.indexOf(li) !== active) setActive(items.indexOf(li));
+      });
+      doc.addEventListener('click', function (e) { if (isOpen() && !field.contains(e.target)) close(false); });
+      btn.addEventListener('blur', function () { window.setTimeout(function () { if (isOpen() && doc.activeElement !== btn) close(false); }, 0); });
+
+      /* validación: el select oculto sigue siendo required; el error se ve y enfoca en el botón */
+      sel.addEventListener('invalid', function (e) {
+        e.preventDefault();
+        setError(true);
+        if (form.querySelector(':invalid') === sel) btn.focus();
+      });
+      sel.addEventListener('change', sync);
+      form.addEventListener('reset', function () { window.setTimeout(function () { close(false); setError(false); sync(); }, 0); });
+
+      window.addEventListener('pageshow', sync);
+      sel.classList.add('select-native');
+      sel.tabIndex = -1; sel.setAttribute('aria-hidden', 'true');
+      field.appendChild(btn); field.appendChild(list);
+      field.classList.add('is-custom');
+      sync();
+    })();
     form.addEventListener('submit', function (e) {
       e.preventDefault();
       if (sending) return;
