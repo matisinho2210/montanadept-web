@@ -767,21 +767,28 @@ body.is-home-dark { background: var(--night); color: #f3f3f1; }
 }
 @media (prefers-reduced-motion: reduce) { .stg-item { opacity: 1 !important; transform: none !important; } }
 
-/* ---------- transición de página "curtains" ----------
-   Al salir de la portada, main.js pone un overlay (.curtain) que hace fade-in y navega. En la página destino un script
-   inline del <head> agrega html.curtain-in (si hay flag en sessionStorage) y esta cortina cubre desde el primer pintado;
-   main.js la revela con html.curtain-out. Red de seguridad: la animación CSS la retira sola a los ~2.4 s aunque falle el JS. */
-:root { --curtain-ms: 400ms; --curtain-ease: cubic-bezier(0.22, 1, 0.36, 1); }
-.curtain { position: fixed; inset: 0; z-index: 9999; background: var(--night); opacity: 0; pointer-events: all; transition: opacity var(--curtain-ms) var(--curtain-ease); }
-.curtain.is-in { opacity: 1; }
+/* ---------- transición de página "blinds" (persianas) ----------
+   Salida (cualquier enlace interno): main.js monta .blinds con láminas que bajan desde arriba, escalonadas, y navega.
+   Entrada: un script inline del <head> agrega html.curtain-in (si hay flag en sessionStorage) y ::after cubre desde el primer
+   pintado; main.js monta .blinds cubriendo, agrega html.blinds-ready (quita ::after) y las láminas se recogen hacia abajo.
+   Red de seguridad: la animación CSS retira ::after sola a los ~2.4 s aunque falle el JS. */
+:root { --blinds-n: 10; --blinds-ms: 520ms; --blinds-stagger: 45ms; --blinds-ease: cubic-bezier(.76, 0, .24, 1); }
+@media (max-width: 599px) { :root { --blinds-n: 6; } }
+.blinds { position: fixed; inset: 0; z-index: 9999; display: flex; pointer-events: all; }
+.blinds__slat { flex: 1 1 0; background: var(--night); transform: scaleY(0); transform-origin: top; will-change: transform; margin-right: -1px; }
+.blinds.is-covering .blinds__slat { transform: scaleY(1); transform-origin: bottom; }
+.blinds.is-closing .blinds__slat { animation: blinds-close var(--blinds-ms) var(--blinds-ease) forwards; animation-delay: calc(var(--i) * var(--blinds-stagger)); }
+.blinds.is-opening .blinds__slat { transform: scaleY(1); transform-origin: bottom; animation: blinds-open var(--blinds-ms) var(--blinds-ease) forwards; animation-delay: calc(var(--i) * var(--blinds-stagger)); }
+@keyframes blinds-close { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+@keyframes blinds-open { from { transform: scaleY(1); } to { transform: scaleY(0); } }
 html.curtain-in::after {
   content: ""; position: fixed; inset: 0; z-index: 9999; background: var(--night); opacity: 1; pointer-events: all;
-  animation: curtain-out var(--curtain-ms) var(--curtain-ease) 2.4s forwards;
+  animation: curtain-safety .4s ease 2.4s forwards;
 }
-html.curtain-in.curtain-out::after { pointer-events: none; animation: curtain-out var(--curtain-ms) var(--curtain-ease) 0s forwards; }
-@keyframes curtain-out { from { opacity: 1; } to { opacity: 0; pointer-events: none; visibility: hidden; } }
-@media (prefers-reduced-motion: reduce) { .curtain, html.curtain-in::after { display: none !important; } }
-@media print { .t-stream-w, .stg-item { opacity: 1 !important; filter: none !important; transform: none !important; } .curtain, html.curtain-in::after { display: none !important; } }
+html.curtain-in.blinds-ready::after { display: none; }
+@keyframes curtain-safety { from { opacity: 1; } to { opacity: 0; pointer-events: none; visibility: hidden; } }
+@media (prefers-reduced-motion: reduce) { .blinds, html.curtain-in::after { display: none !important; } }
+@media print { .t-stream-w, .stg-item { opacity: 1 !important; filter: none !important; transform: none !important; } .blinds, html.curtain-in::after { display: none !important; } }
 
 /* ---------- Transitions.dev — Menu dropdown ---------- */
 :root { --dropdown-open-dur: 250ms; --dropdown-close-dur: 150ms; --dropdown-pre-scale: 0.97; --dropdown-closing-scale: 0.99; --dropdown-ease: cubic-bezier(0.22, 1, 0.36, 1); }
