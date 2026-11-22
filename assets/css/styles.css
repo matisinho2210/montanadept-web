@@ -70,7 +70,6 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .brand img { height: 22px; width: auto; }
 .hdr-date, .hdr-clock-l { display: none; }
 .hdr-clock { position: relative; z-index: 3; align-self: center; margin: 0 auto 0 20px; font: 400 12px/1 var(--f-mono); letter-spacing: .02em; color: var(--gray-text); white-space: nowrap; }
-body.is-home-dark .hdr-clock { color: var(--accent); }
 .menu-btn {
   position: relative; z-index: 3; display: flex; align-items: center; height: 100%;
   padding: 0 var(--m); border-left: 1px solid var(--line);
@@ -638,25 +637,15 @@ body.lb-lock { overflow: hidden; }
 /* ---------- inicio: pantalla negra con menú ---------- */
 body.is-home-dark { background: var(--night); color: #f3f3f1; }
 .hm {
-  min-height: calc(100vh - var(--header-h) - 1px); min-height: calc(100svh - var(--header-h) - 1px); display: grid; grid-template-rows: 1fr auto;
+  min-height: 100vh; min-height: 100svh; display: grid; grid-template-rows: auto 1fr auto;
   overflow-x: clip; --hm-ink: #f3f3f1;
 }
 .hm a { color: var(--hm-ink); text-decoration: none; }
 .hm :focus-visible { outline: 2px solid #fff; outline-offset: 6px; }
-/* inicio: cabecera común en versión oscura */
-body.is-home-dark .site-header { background: var(--night); border-bottom-color: rgba(255,255,255,.12); }
-body.is-home-dark .site-header :focus-visible { outline-color: #fff; }
-body.is-home-dark .menu-btn { color: var(--paper); border-left-color: rgba(255,255,255,.12); }
-body.is-home-dark .menu-btn:hover, body.is-home-dark .menu-btn:focus-visible { background: var(--accent); color: var(--ink); }
-body.is-home-dark .nav { background: var(--night); }
-body.is-home-dark .nav-list a { color: #a9a9a5; }
-body.is-home-dark .nav-list a:hover, body.is-home-dark .nav-list a[aria-current] { color: var(--paper); }
-body.is-home-dark .header-cta { color: var(--paper); border-color: rgba(255,255,255,.12); }
-body.is-home-dark .header-cta:hover, body.is-home-dark .header-cta:focus-visible { background: var(--accent); color: var(--ink); }
-@media (min-width: 900px) {
-  body.is-home-dark .header-cta { border-color: transparent; border-left: 1px solid rgba(255,255,255,.12); }
-  body.is-home-dark .header-cta:hover, body.is-home-dark .header-cta:focus-visible { border-left-color: rgba(255,255,255,.12); }
-}
+.hm-bar { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 20px var(--m); font: 400 12px/1.5 var(--f-mono); letter-spacing: 0.04em; text-transform: uppercase; }
+.hm-brand { display: inline-flex; align-items: center; gap: 12px; }
+.hm-brand img { height: 20px; width: auto; }
+.hm-clock { color: var(--accent); white-space: nowrap; }
 .hm-main { display: grid; align-items: center; padding: 24px var(--m); }
 .hm-list { display: grid; justify-items: center; text-align: center; }
 .hm-item { position: relative; width: 100%; }
@@ -710,3 +699,48 @@ body.is-home-dark .header-cta:hover, body.is-home-dark .header-cta:focus-visible
   letter-spacing: 0.08em; text-transform: uppercase; text-align: center;
   opacity: 0.6; color: inherit;
 }
+
+/* ---------- streaming text (palabra por palabra al hacer scroll) ----------
+   El JS envuelve cada palabra en .t-stream-w y agrega .is-in de a una cada --stream-gap.
+   Sin JS (o con movimiento reducido) no existen los spans: el texto se ve normal. */
+:root { --stream-gap: 60ms; --stream-fade: 350ms; --stream-blur: 1px; --stream-ease: cubic-bezier(0.22, 1, 0.36, 1); }
+.t-stream-w, .t-stream-run { display: inline; }
+.t-stream-w { opacity: 0; filter: blur(var(--stream-blur)); transition: opacity var(--stream-fade) var(--stream-ease), filter var(--stream-fade) var(--stream-ease); }
+.t-stream-w.is-in { opacity: 1; filter: blur(0); }
+@media (prefers-reduced-motion: reduce) { .t-stream-w { transition: none !important; filter: none !important; opacity: 1 !important; } }
+
+/* Un [data-rv] con texto en streaming no hace fade propio (evita doble efecto):
+   el texto se anima palabra por palabra y solo las imágenes/videos/SVG del bloque conservan el fade. */
+.js [data-rv].rv-text { opacity: 1; transition: none; }
+.js [data-rv].rv-text :is(img, video, svg, .ph) { transition: opacity .5s ease; }
+.js [data-rv].rv-text:not(.in) :is(img, video, svg, .ph) { opacity: 0; }
+.js [data-rv].rv-text.now :is(img, video, svg, .ph) { transition: none; }
+
+/* ---------- fotos de sesiones: entrada con resorte (opacity + scale, delay aleatorio vía --stg-delay) ----------
+   La clase .stg-item solo la pone el JS (sin JS o con movimiento reducido las fotos se ven normal). */
+:root { --stg-spring: cubic-bezier(0.34, 1.56, 0.64, 1); }
+@supports (transition-timing-function: linear(0, 1)) {
+  :root { --stg-spring: linear(0, 0.083, 0.273, 0.494, 0.701, 0.868, 0.985, 1.056, 1.089, 1.094, 1.083, 1.064, 1.043, 1.024, 1.009, 0.999, 0.994, 0.991, 0.991, 0.993, 0.994, 0.996, 0.998, 0.999, 1, 1.001, 1.001, 1.001, 1); }
+}
+.stg-item { opacity: 0; transform: scale(0); transform-origin: center; }
+.stg-item.is-in {
+  opacity: 1; transform: scale(1);
+  transition: transform .7s var(--stg-spring) var(--stg-delay, 0ms), opacity .3s ease var(--stg-delay, 0ms);
+}
+@media (prefers-reduced-motion: reduce) { .stg-item { opacity: 1 !important; transform: none !important; } }
+
+/* ---------- transición de página "curtains" ----------
+   Al salir de la portada, main.js pone un overlay (.curtain) que hace fade-in y navega. En la página destino un script
+   inline del <head> agrega html.curtain-in (si hay flag en sessionStorage) y esta cortina cubre desde el primer pintado;
+   main.js la revela con html.curtain-out. Red de seguridad: la animación CSS la retira sola a los ~2.4 s aunque falle el JS. */
+:root { --curtain-ms: 400ms; --curtain-ease: cubic-bezier(0.22, 1, 0.36, 1); }
+.curtain { position: fixed; inset: 0; z-index: 9999; background: var(--night); opacity: 0; pointer-events: all; transition: opacity var(--curtain-ms) var(--curtain-ease); }
+.curtain.is-in { opacity: 1; }
+html.curtain-in::after {
+  content: ""; position: fixed; inset: 0; z-index: 9999; background: var(--night); opacity: 1; pointer-events: all;
+  animation: curtain-out var(--curtain-ms) var(--curtain-ease) 2.4s forwards;
+}
+html.curtain-in.curtain-out::after { pointer-events: none; animation: curtain-out var(--curtain-ms) var(--curtain-ease) 0s forwards; }
+@keyframes curtain-out { from { opacity: 1; } to { opacity: 0; pointer-events: none; visibility: hidden; } }
+@media (prefers-reduced-motion: reduce) { .curtain, html.curtain-in::after { display: none !important; } }
+@media print { .t-stream-w, .stg-item { opacity: 1 !important; filter: none !important; transform: none !important; } .curtain, html.curtain-in::after { display: none !important; } }
