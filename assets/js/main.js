@@ -373,7 +373,7 @@
     var tiraEl = doc.querySelector('[data-proyectos-tira]');
     var tiraCount = doc.getElementById('tira-count');
     var desk = window.matchMedia ? window.matchMedia('(min-width: 1080px)') : { matches: true };
-    var vista = 'lista';
+    var vista = 'grilla';
     var cat = 'Todos';
     var emptyEl = doc.getElementById('sin-proyectos');
     var status = doc.getElementById('filtro-estado');
