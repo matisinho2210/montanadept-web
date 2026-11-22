@@ -51,7 +51,19 @@
 </section>
 
 <section class="proj-list" aria-label="Lista de proyectos">
-  <div class="pv pv-lista" id="v-lista">
+  <div class="grid pf">
+    <div class="pf-grp pf-vista" role="group" aria-labelledby="pf-l-vista">
+      <p class="pf-label mono" id="pf-l-vista">Vista</p>
+      <ul class="pf-list">
+        <li><button class="vbtn" type="button" data-view="grilla" aria-pressed="true">Grilla</button></li>
+        <li><button class="vbtn" type="button" data-view="lista" aria-pressed="false">Lista</button></li>
+      </ul>
+    </div>
+  </div>
+  <div class="pv pv-grilla" id="v-grilla">
+    <ul class="pgrid2" data-proyectos-grid="todos"></ul>
+  </div>
+  <div class="pv pv-lista" id="v-lista" hidden>
     <div class="grid plist-ctl"><button class="plist-all mono" type="button" data-expand-for="plist-todos" aria-controls="plist-todos"><span class="plist-all-t">Expandir todo</span> <span aria-hidden="true" class="plist-all-i">▾</span></button></div>
     <ul class="plist" id="plist-todos" data-plist="todos"></ul>
   </div>
