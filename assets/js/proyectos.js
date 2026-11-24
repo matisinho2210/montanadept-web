@@ -75,7 +75,7 @@ window.PROYECTOS = [
     instagram: "@fuku_kf",
     destacado: true,
     portada: "assets/img/proyectos/fuku/portada.jpg",
-    portadaSize: [1333, 2000],
+    portadaSize: [2000, 2000],
     diseno: [
       {
         grupo: "Redes sociales",
@@ -256,8 +256,8 @@ window.PROYECTOS = [
     sesionesIntro: "Cada sesión cuenta una jornada completa: el servicio, la gente y el producto en su contexto.",
     instagram: "@shawi.cl",
     destacado: true,
-    portada: "assets/img/proyectos/shawi/sesiones/popup-01.jpg",
-    portadaSize: [1500, 2000],
+    portada: "assets/img/proyectos/shawi/portada.jpg",
+    portadaSize: [2000, 2000],
     diseno: [
       {
         grupo: "Redes sociales",
@@ -436,12 +436,13 @@ window.PROYECTOS = [
     cliente: "935 Helados",
     rubro: "Heladería en Viña del Mar",
     anio: "",
-    categorias: ["Branding", "Redes sociales"],
+    categorias: ["Redes sociales"],
     servicios: [],
     descripcion: "Partimos desde cero. Llegó con la idea de una heladería en Viña del Mar y la convertimos en marca: logo, identidad visual y las piezas con las que hoy se presenta.",
     instagram: "@935helados",
     destacado: true,
-    portada: "",
+    portada: "assets/img/proyectos/935/portada.jpg",
+    portadaSize: [2000, 2000],
     diseno: ["", "", "", ""],
     fotos: ["", "", "", ""],
     videos: [""]
@@ -459,7 +460,7 @@ window.PROYECTOS = [
     instagram: "@dokebi.cl",
     destacado: true,
     portada: "assets/img/proyectos/dokebi/portada.jpg",
-    portadaSize: [1000, 1500],
+    portadaSize: [2000, 2000],
     diseno: [],
     videos: [],
     series: [
@@ -495,14 +496,14 @@ window.PROYECTOS = [
     cliente: "CortaLab",
     rubro: "",
     anio: "",
-    categorias: ["Audiovisual"],
+    categorias: ["Redes sociales"],
     servicios: [],
     descripcion: "Acá el trabajo es contenido para redes, en formato reel. Hemos hecho varios para su Instagram.",
     sesionesIntro: "Registro audiovisual del proyecto.",
     instagram: "@corta.lab",
     destacado: true,
     portada: "assets/img/proyectos/cortalab/portada.jpg",
-    portadaSize: [844, 1500],
+    portadaSize: [2000, 2000],
     diseno: [],
     videos: [],
     series: [
@@ -511,7 +512,7 @@ window.PROYECTOS = [
         titulo: "Workshop x Garuda",
         fecha: "2026",
         bajada: "Registro audiovisual.",
-        card: { src: "assets/img/proyectos/cortalab/portada.jpg", w: 844, h: 1500 },
+        card: { src: "assets/img/proyectos/cortalab/sesiones/workshop-garuda-card.jpg", w: 844, h: 1500 },
         layout: "editorial",
         fotos: [
           { src: "assets/img/proyectos/cortalab/sesiones/workshop-garuda.mp4", poster: "assets/img/proyectos/cortalab/sesiones/workshop-garuda-poster.jpg", w: 480, h: 854, video: true }

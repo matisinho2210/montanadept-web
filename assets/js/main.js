@@ -373,7 +373,7 @@
     var tiraEl = doc.querySelector('[data-proyectos-tira]');
     var tiraCount = doc.getElementById('tira-count');
     var desk = window.matchMedia ? window.matchMedia('(min-width: 1080px)') : { matches: true };
-    var vista = 'grilla';
+    var vista = 'lista';
     var cat = 'Todos';
     var emptyEl = doc.getElementById('sin-proyectos');
     var status = doc.getElementById('filtro-estado');
@@ -1560,9 +1560,29 @@
       var MSG = {
         'f-nombre': { empty: 'Falta tu nombre' },
         'f-correo': { empty: 'Falta tu correo', bad: 'Revisa el correo' },
+        'f-empresa': { empty: 'Falta tu empresa o marca' },
         'f-necesidad': { empty: 'Elige una opción' },
         'f-mensaje': { empty: 'Cuéntanos un poco más' }
       };
+      var FECHA_MSG = {
+        empty: 'Falta una fecha y hora',
+        invalid: 'Revisa la fecha y la hora',
+        past: 'Elige una fecha que no haya pasado',
+        dup: 'Esa fecha ya está en otra opción'
+      };
+      /* fechas de reunión: devuelve el código de error o '' si está bien */
+      function fechaErr(el) {
+        var v = el.value;
+        if (!v) return '';
+        var t = new Date(v).getTime();
+        if (isNaN(t)) return 'invalid';
+        if (t < Date.now()) return 'past';
+        var dup = false;
+        Array.prototype.forEach.call(form.querySelectorAll('input[data-fecha]'), function (o) {
+          if (o !== el && o.value === v) dup = true;
+        });
+        return dup ? 'dup' : '';
+      }
       var reduce = function () { return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches); };
       var recs = [];
       form.setAttribute('novalidate', '');
@@ -1573,9 +1593,11 @@
           if (!el.required) return 'idle';
           return (force || rec.dirty) ? 'error' : 'idle';
         }
+        if (el.hasAttribute('data-fecha')) return fechaErr(el) ? 'error' : 'valid';
         return el.validity.valid ? 'valid' : 'error';
       }
       function messageFor(rec) {
+        if (rec.el.hasAttribute('data-fecha')) return FECHA_MSG[fechaErr(rec.el) || 'empty'];
         var m = MSG[rec.el.id] || {};
         return (rec.el.value || '').trim() ? (m.bad || 'Revisa este campo') : (m.empty || 'Campo obligatorio');
       }
@@ -1661,9 +1683,17 @@
           setIcon(rec, null);
           if (cur === 'valid') rec.field.dataset.state = 'focus';
         }
+        if (rec.el.hasAttribute('data-fecha')) {
+          /* una fecha repetida o corregida cambia el estado de las otras opciones */
+          recs.forEach(function (o) {
+            if (o === rec || !o.el.hasAttribute('data-fecha') || !o.dirty || !o.el.value) return;
+            var s = validate(o, true);
+            if (s !== o.field.dataset.state && o.field.dataset.state !== 'focus') setState(o, s);
+          });
+        }
       }
 
-      Array.prototype.forEach.call(form.querySelectorAll('.field'), function (field) {
+      function register(field) {
         var el = field.querySelector('input, textarea, select');
         var ctl = field.querySelector('.field__control');
         if (!el || !ctl) return;
@@ -1694,8 +1724,10 @@
           });
         } else {
           el.addEventListener('input', function () { live(rec); });
+          if (el.hasAttribute('data-fecha')) el.addEventListener('change', function () { live(rec); });
         }
-      });
+      }
+      Array.prototype.forEach.call(form.querySelectorAll('.field'), register);
 
       form.addEventListener('reset', function () {
         window.setTimeout(function () {
@@ -1704,6 +1736,10 @@
       });
 
       return {
+        add: register,
+        remove: function (field) {
+          recs = recs.filter(function (r) { return r.field !== field; });
+        },
         /* Valida todo; marca errores con sacudida escalonada y enfoca el primero inválido */
         validateAll: function () {
           var bad = [];
@@ -1719,6 +1755,79 @@
         }
       };
     })();
+    /* fechas para reunirnos: 2 obligatorias + hasta 3 opcionales */
+    var fechasList = doc.getElementById('fechas-list');
+    var fechasAdd = doc.getElementById('fechas-add');
+    var FECHAS_MAX = 5;
+    var pad2 = function (n) { return (n < 10 ? '0' : '') + n; };
+    var fechaMin = function () {
+      var d = new Date();
+      d.setSeconds(0, 0);
+      d.setMinutes(Math.ceil(d.getMinutes() / 15) * 15);
+      return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()) + 'T' + pad2(d.getHours()) + ':' + pad2(d.getMinutes());
+    };
+    var fechaInputs = function () { return fechasList ? fechasList.querySelectorAll('input[data-fecha]') : []; };
+    var setFechaMin = function () {
+      var m = fechaMin();
+      Array.prototype.forEach.call(fechaInputs(), function (i) { i.min = m; });
+    };
+    var fechaLegible = function (v) {
+      var d = new Date(v);
+      return isNaN(d.getTime()) ? v : d.toLocaleString('es-CL', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false });
+    };
+    var fechasTexto = function () {
+      var out = [];
+      Array.prototype.forEach.call(fechaInputs(), function (i, k) {
+        if (i.value) out.push('Opción ' + (k + 1) + ': ' + fechaLegible(i.value));
+      });
+      return out;
+    };
+    var syncFechas = function () {
+      var rows = fechasList.querySelectorAll('.fecha-row');
+      Array.prototype.forEach.call(rows, function (row, k) {
+        var n = k + 1, input = row.querySelector('input'), lab = row.querySelector('label'), del = row.querySelector('.fecha-del');
+        input.name = 'fecha' + n;
+        lab.textContent = 'Opción ' + n;
+        if (del) del.setAttribute('aria-label', 'Quitar opción ' + n);
+      });
+      if (fechasAdd) fechasAdd.hidden = rows.length >= FECHAS_MAX;
+    };
+    if (fechasList) {
+      setFechaMin();
+      var fechaSeq = 2;
+      if (fechasAdd) {
+        fechasAdd.addEventListener('click', function () {
+          if (fechasList.querySelectorAll('.fecha-row').length >= FECHAS_MAX) return;
+          fechaSeq += 1;
+          var id = 'f-fecha' + fechaSeq;
+          var row = doc.createElement('div');
+          row.className = 'fecha-row';
+          row.innerHTML = '<div class="field field--fecha"><label class="mono" for="' + id + '"></label><div class="field__control"><input id="' + id + '" type="datetime-local" step="900" data-fecha></div></div>' +
+            '<button class="fecha-del mono" type="button"><span aria-hidden="true">×</span></button>';
+          fechasList.appendChild(row);
+          var field = row.querySelector('.field');
+          fieldsApi.add(field);
+          syncFechas();
+          setFechaMin();
+          row.querySelector('input').focus();
+          row.querySelector('.fecha-del').addEventListener('click', function () {
+            fieldsApi.remove(field);
+            row.remove();
+            syncFechas();
+            fechaInputs().forEach(function (i) { if (i.value) i.dispatchEvent(new Event('input')); });
+            fechasAdd.focus();
+          });
+        });
+      }
+      form.addEventListener('reset', function () {
+        Array.prototype.slice.call(fechasList.querySelectorAll('.fecha-row')).slice(2).forEach(function (row) {
+          fieldsApi.remove(row.querySelector('.field'));
+          row.remove();
+        });
+        syncFechas();
+        setFechaMin();
+      });
+    }
     function setBadge(btn, state) {
       if (!btn) return;
       var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -1805,13 +1914,16 @@
         }
         return;
       }
+      setFechaMin();
+      var fechas = fechasTexto();
       var quien = val('empresa') || val('nombre');
       var subject = 'Nuevo proyecto — ' + quien;
       mailBody = 'Nombre: ' + val('nombre') + '\n' +
         'Correo: ' + val('correo') + '\n' +
         'Empresa o marca: ' + (val('empresa') || '—') + '\n' +
         'Qué necesita: ' + val('necesidad') + '\n\n' +
-        'Mensaje:\n' + val('mensaje');
+        'Mensaje:\n' + val('mensaje') + '\n\n' +
+        'Fechas para reunirnos:\n' + (fechas.length ? fechas.join('\n') : '—');
       if (mailLink) {
         mailLink.href = 'mailto:contacto@montanadept.com?subject=' + encodeURIComponent(subject) +
           '&body=' + encodeURIComponent(mailBody);
@@ -1821,6 +1933,10 @@
       if (!WEB3FORMS_KEY || !window.fetch) { showReady('Tu mensaje está listo.', true); return; }
 
       var data = new FormData(form);
+      Array.prototype.forEach.call(fechaInputs(), function (i, k) {
+        data.delete(i.name);
+        if (i.value) data.append('Fecha para reunirnos, opción ' + (k + 1), fechaLegible(i.value));
+      });
       data.append('access_key', WEB3FORMS_KEY);
       data.append('subject', subject);
       data.append('from_name', 'Web Montaña Dept');
