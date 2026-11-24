@@ -863,3 +863,6 @@ html.curtain-in.blinds-ready::after { display: none; }
 }
 
 @media (max-width: 699px) { .hm-item > a { font-size: 15.5vw; } }
+
+.blinds, html.curtain-in::after { bottom: auto; height: 100vh; height: 100lvh; }
+html:has(.blinds.is-closing), html:has(.blinds.is-closing) body, html:has(.blinds.is-covering), html:has(.blinds.is-covering) body, html.curtain-in:not(.blinds-ready), html.curtain-in:not(.blinds-ready) body { background: var(--blinds-color); }
