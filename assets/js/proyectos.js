@@ -67,6 +67,7 @@ window.PROYECTOS = [
   {
     slug: "fuku",
     nombre: "Fuku",
+    logo: "assets/img/logos-clientes/fuku.svg",
     cliente: "Fuku",
     rubro: "Comida coreana",
     anio: "",
@@ -249,6 +250,7 @@ window.PROYECTOS = [
   {
     slug: "shawi",
     nombre: "Shawi",
+    logo: "assets/img/logos-clientes/shawi.svg",
     cliente: "Shawi",
     rubro: "Comida árabe",
     anio: "",
@@ -435,6 +437,7 @@ window.PROYECTOS = [
   {
     slug: "935",
     nombre: "935",
+    logo: "assets/img/logos-clientes/935.svg",
     cliente: "935 Helados",
     rubro: "Heladería en Viña del Mar",
     anio: "",
@@ -452,6 +455,7 @@ window.PROYECTOS = [
   {
     slug: "dokebi",
     nombre: "Dokebi",
+    logo: "assets/img/logos-clientes/dokebi.svg",
     cliente: "Dokebi",
     rubro: "",
     anio: "",
@@ -495,6 +499,7 @@ window.PROYECTOS = [
   {
     slug: "cortalab",
     nombre: "CortaLab",
+    logo: "assets/img/logos-clientes/cortalab.svg",
     cliente: "CortaLab",
     rubro: "",
     anio: "",
