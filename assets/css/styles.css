@@ -127,7 +127,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 /* leyenda de las tarjetas de proyecto */
 .ptile-cap {
   position: absolute; left: 10px; bottom: 10px; z-index: 1; max-width: calc(100% - 20px);
-  background: var(--paper); color: var(--ink); padding: 4px 8px; opacity: 0; transition: opacity .2s ease; pointer-events: none;
+  background: var(--accent); color: #000; padding: 4px 8px; opacity: 0; transition: opacity .2s ease; pointer-events: none;
 }
 .ptile:hover .ptile-cap, .ptile:focus-visible .ptile-cap { opacity: 1; }
 @media (hover: none) { .ptile-cap { opacity: 1; } }
