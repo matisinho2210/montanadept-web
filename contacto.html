@@ -23,7 +23,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600&amp;family=Inter:wght@400;500&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap">
-<link rel="stylesheet" href="assets/css/styles.css?v=20261122b">
+<link rel="stylesheet" href="assets/css/styles.css?v=20261124a">
 </head>
 <body>
 <a class="skip-link" href="#main">Saltar al contenido</a>
@@ -63,10 +63,19 @@
     <input type="checkbox" name="botcheck" class="sr-only" tabindex="-1" autocomplete="off" aria-hidden="true">
     <div class="field"><label class="mono" for="f-nombre">[ 01 ] Nombre</label><div class="field__control"><input id="f-nombre" name="nombre" type="text" autocomplete="name" required></div></div>
     <div class="field"><label class="mono" for="f-correo">[ 02 ] Correo</label><div class="field__control"><input id="f-correo" name="correo" type="email" autocomplete="email" required></div></div>
-    <div class="field"><label class="mono" for="f-empresa">[ 03 ] Empresa o marca</label><div class="field__control"><input id="f-empresa" name="empresa" type="text" autocomplete="organization"></div></div>
+    <div class="field"><label class="mono" for="f-empresa">[ 03 ] Empresa o marca</label><div class="field__control"><input id="f-empresa" name="empresa" type="text" autocomplete="organization" required></div></div>
     <div class="field field--select"><label class="mono" for="f-necesidad">[ 04 ] Qué necesitas</label>
       <div class="field__control"><select id="f-necesidad" name="necesidad" required><option value="" selected disabled>Elige una opción</option><option value="Branding">Branding</option><option value="Redes sociales">Redes sociales</option><option value="Publicidad">Publicidad</option><option value="Audiovisual">Audiovisual</option><option value="Otro">Otro</option></select></div></div>
     <div class="field"><label class="mono" for="f-mensaje">[ 05 ] Mensaje</label><div class="field__control"><textarea id="f-mensaje" name="mensaje" rows="3" required></textarea></div></div>
+    <fieldset class="fechas" aria-describedby="fechas-help">
+      <legend class="mono">[ 06 ] Fechas para reunirnos</legend>
+      <p class="fechas__help" id="fechas-help">Propón al menos 2 opciones. Nosotros confirmamos una.</p>
+      <div class="fechas__list" id="fechas-list">
+        <div class="fecha-row"><div class="field field--fecha"><label class="mono" for="f-fecha1">Opción 1</label><div class="field__control"><input id="f-fecha1" name="fecha1" type="datetime-local" step="900" required data-fecha></div></div></div>
+        <div class="fecha-row"><div class="field field--fecha"><label class="mono" for="f-fecha2">Opción 2</label><div class="field__control"><input id="f-fecha2" name="fecha2" type="datetime-local" step="900" required data-fecha></div></div></div>
+      </div>
+      <button class="fechas__add mono" id="fechas-add" type="button">+ Agregar otra fecha</button>
+    </fieldset>
     <div><button class="send send-badge" type="submit" data-state="idle"><span class="send-badge__content">Enviar <span aria-hidden="true">→</span></span></button></div>
     <div class="form-ready" id="form-ready" role="status" aria-live="polite" hidden>
       <p class="form-ready-title mono" id="form-ready-title">Tu mensaje está listo.</p>
@@ -114,7 +123,7 @@
   <a class="footer-word" href="index.html" aria-label="Montaña Dept, inicio"><img src="assets/logos/logo-horizontal-amarillo.svg" alt="" width="1832" height="357"></a>
   <div class="footer-bottom mono"><span>© 2026 Montaña Dept</span><span>Agencia creativa · Santiago, Chile</span></div>
 </footer>
-<script src="assets/js/proyectos.js?v=20261122b" defer></script>
-<script src="assets/js/main.js?v=20261122b" defer></script>
+<script src="assets/js/proyectos.js?v=20261124a" defer></script>
+<script src="assets/js/main.js?v=20261124a" defer></script>
 </body>
 </html>
