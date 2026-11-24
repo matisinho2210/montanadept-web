@@ -453,6 +453,9 @@ a.pt-img:focus-visible { outline-offset: -3px; }
 .fx-next a:last-child { text-align: right; }
 .fx-next .nm { font-family: var(--f-display); font-weight: 500; font-size: clamp(2rem, 7.5vw, 7.5rem); line-height: 1; letter-spacing: -0.045em; transition: transform .35s ease; }
 .fx-next a:hover .mono { color: var(--ink); }
+.fx-next .nm--logo { display: block; line-height: 0; }
+.fx-next .nm--logo img { display: block; height: clamp(40px, 6vw, 104px); width: auto; max-width: 100%; object-fit: contain; }
+.fx-next a:last-child .nm--logo img { margin-left: auto; }
 @media (min-width: 900px) {
   .fx-next a:first-child:hover .nm { transform: translateX(-10px); }
   .fx-next a:last-child:hover .nm { transform: translateX(10px); }
