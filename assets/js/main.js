@@ -156,6 +156,13 @@
     });
   }
   function pad(n) { return n < 10 ? '0' + n : String(n); }
+  /* largo de la palabra más larga del nombre: achica el título en la ficha si no cabe */
+  function fxLargo(nombre) {
+    var lw = 0;
+    String(nombre || '').split(/\s+/).forEach(function (w) { if (w.length > lw) lw = w.length; });
+    var l = lw >= 9 ? 'xl' : lw >= 7 ? 'l' : lw >= 5 ? 'm' : '';
+    return l ? ' data-l="' + l + '"' : '';
+  }
   function listOrDash(v) { return Array.isArray(v) && v.length ? v.join(', ') : '—'; }
   function textOrDash(v) { return v ? String(v) : '—'; }
   function isRemote(p) { return /^(https?:)?\/\//i.test(p); }
@@ -1009,7 +1016,7 @@
               '<div class="fx-bar mono"><span><span aria-hidden="true">→</span> Proyecto ' + pad(idx + 1) + ' / ' + pad(total) + '</span>' +
                 '<a href="' + esc(base + 'proyectos.html') + '"><span aria-hidden="true">←</span> Proyectos</a></div>' +
               '<p class="fx-num" aria-hidden="true">' + pad(idx + 1) + '</p>' +
-              '<h1 class="fx-title">' + esc(p.nombre) + '</h1>' +
+              '<h1 class="fx-title"' + fxLargo(p.nombre) + '>' + esc(p.nombre) + '</h1>' +
             '</div>' +
             '<div class="fx-meta">' +
               '<div class="fx-block"><h2 class="fx-label mono">[ Ficha ]</h2><dl class="fx-body fx-table">' +
