@@ -861,3 +861,5 @@ html.curtain-in.blinds-ready::after { display: none; }
     content: ""; position: absolute; inset: -12px -6px;
   }
 }
+
+@media (max-width: 699px) { .hm-item > a { font-size: 15.5vw; } }
