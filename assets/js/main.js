@@ -988,7 +988,9 @@
 
       var navLink = function (q, dir) {
         return '<a href="' + esc(pageUrl(q.slug)) + '"><span class="mono">' + (dir === 'prev' ? '← Anterior' : 'Siguiente →') +
-          '</span><span class="nm">' + esc(q.nombre) + '</span></a>';
+          '</span>' + (q.logo
+            ? '<span class="nm nm--logo"><img src="' + esc(asset(q.logo)) + '" alt="' + esc(q.nombre) + '" loading="lazy" decoding="async"></span>'
+            : '<span class="nm">' + esc(q.nombre) + '</span>') + '</a>';
       };
 
       var rest = (disenoSeries ? disenoGroups(p) : gallery('Diseño', diseno, 'g-diseno')) +

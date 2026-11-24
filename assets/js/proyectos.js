@@ -7,6 +7,8 @@
  * - Las rutas de imagen/video son relativas a la raíz del sitio,
  *   por ejemplo "assets/img/proyectos/fuku/portada.jpg".
  * - Ruta vacía ("") = se muestra un bloque gris "pendiente".
+ * - logo: (opcional) ruta al logo del cliente, ej. "assets/img/logos-clientes/fuku.svg".
+ *   Si está, se usa en la navegación Anterior / Siguiente en vez del nombre.
  * - videos[]: archivo .mp4 (ruta relativa) o link de YouTube / Vimeo.
  *   Con [] no se muestra ningún bloque de video.
  * - portadaSize: [ancho, alto] en píxeles de la portada (opcional; evita saltos de layout).
