@@ -202,7 +202,7 @@ window.PROYECTOS = [
           { src: "assets/img/proyectos/fuku/sesiones/reel-05.mp4", poster: "assets/img/proyectos/fuku/sesiones/reel-05-poster.jpg", w: 720, h: 1280, video: true, caption: "Reels · 21.07 · Horario" },
           { src: "assets/img/proyectos/fuku/sesiones/reel-06.mp4", poster: "assets/img/proyectos/fuku/sesiones/reel-06-poster.jpg", w: 720, h: 1280, video: true, caption: "Reels · 21.07 · Palillos" },
           { src: "assets/img/proyectos/fuku/sesiones/reel-07.mp4", poster: "assets/img/proyectos/fuku/sesiones/reel-07-poster.jpg", w: 720, h: 1280, video: true, caption: "Reels · 21.07 · Post it" },
-          { src: "assets/img/proyectos/fuku/sesiones/reel-08.gif", w: 480, h: 270, caption: "Carrusel horario · 12.08" },
+          { src: "assets/img/proyectos/fuku/sesiones/reel-08.mp4", poster: "assets/img/proyectos/fuku/sesiones/reel-08-poster.jpg", w: 480, h: 270, video: true, caption: "Carrusel horario · 12.08" },
           { src: "assets/img/proyectos/fuku/sesiones/reel-09.mp4", poster: "assets/img/proyectos/fuku/sesiones/reel-09-poster.jpg", w: 1280, h: 720, video: true, caption: "Estreno Kim Chicken · 22.08" },
           { src: "assets/img/proyectos/fuku/sesiones/reel-10.mp4", poster: "assets/img/proyectos/fuku/sesiones/reel-10-poster.jpg", w: 720, h: 1280, video: true, caption: "Promo ramen · 27.08" },
           { src: "assets/img/proyectos/fuku/sesiones/reel-11.mp4", poster: "assets/img/proyectos/fuku/sesiones/reel-11-poster.jpg", w: 720, h: 1280, video: true, caption: "Septiembre · Delivery" },
