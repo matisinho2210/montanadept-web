@@ -10,7 +10,7 @@
   --ghost: #dcdcd7;
   --block: #e6e6e2;
   --night: #0d0d0d;
-  --accent: #f8f807;
+  --accent: #fadf4b;
   --m: 16px;            /* margen lateral */
   --g: 20px;            /* gutter */
   --header-h: 62px;
@@ -794,17 +794,17 @@ body.is-home-dark { background: var(--night); color: #f3f3f1; }
    Entrada: un script inline del <head> agrega html.curtain-in (si hay flag en sessionStorage) y ::after cubre desde el primer
    pintado; main.js monta .blinds cubriendo, agrega html.blinds-ready (quita ::after) y las láminas se recogen hacia abajo.
    Red de seguridad: la animación CSS retira ::after sola a los ~2.4 s aunque falle el JS. */
-:root { --blinds-n: 10; --blinds-ms: 520ms; --blinds-stagger: 45ms; --blinds-ease: cubic-bezier(.76, 0, .24, 1); }
+:root { --blinds-color: #fadf4b; --blinds-n: 10; --blinds-ms: 520ms; --blinds-stagger: 45ms; --blinds-ease: cubic-bezier(.76, 0, .24, 1); }
 @media (max-width: 599px) { :root { --blinds-n: 6; } }
 .blinds { position: fixed; inset: 0; z-index: 9999; display: flex; pointer-events: all; }
-.blinds__slat { flex: 1 1 0; background: var(--night); transform: scaleY(0); transform-origin: top; will-change: transform; margin-right: -1px; }
+.blinds__slat { flex: 1 1 0; background: var(--blinds-color); transform: scaleY(0); transform-origin: top; will-change: transform; margin-right: -1px; }
 .blinds.is-covering .blinds__slat { transform: scaleY(1); transform-origin: bottom; }
 .blinds.is-closing .blinds__slat { animation: blinds-close var(--blinds-ms) var(--blinds-ease) forwards; animation-delay: calc(var(--i) * var(--blinds-stagger)); }
 .blinds.is-opening .blinds__slat { transform: scaleY(1); transform-origin: bottom; animation: blinds-open var(--blinds-ms) var(--blinds-ease) forwards; animation-delay: calc(var(--i) * var(--blinds-stagger)); }
 @keyframes blinds-close { from { transform: scaleY(0); } to { transform: scaleY(1); } }
 @keyframes blinds-open { from { transform: scaleY(1); } to { transform: scaleY(0); } }
 html.curtain-in::after {
-  content: ""; position: fixed; inset: 0; z-index: 9999; background: var(--night); opacity: 1; pointer-events: all;
+  content: ""; position: fixed; inset: 0; z-index: 9999; background: var(--blinds-color); opacity: 1; pointer-events: all;
   animation: curtain-safety .4s ease 2.4s forwards;
 }
 html.curtain-in.blinds-ready::after { display: none; }
